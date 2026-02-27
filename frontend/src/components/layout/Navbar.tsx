@@ -4,12 +4,19 @@ import { HardHat, Menu, X, LogOut, User, LayoutDashboard } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export const Navbar = () => {
+interface NavbarProps {
+  forcePublic?: boolean;
+}
+
+export const Navbar = ({ forcePublic = false }: NavbarProps) => {
   const { user, role, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const dashboardPath = role === 'SUPER_ADMIN' ? '/admin/dashboard' : role === 'CONTRACTOR' ? '/contractor/dashboard' : '/user/dashboard';
+  
+  // Show public navigation if forcePublic is true or user is not logged in
+  const showPublicNav = forcePublic || !user;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
@@ -23,28 +30,30 @@ export const Navbar = () => {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-6 md:flex">
-          <Link to="/browse-contractors" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            Find Contractors
-          </Link>
-          {user ? (
+          {!forcePublic && (
+            <Link to="/browse-contractors" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              Find Contractors
+            </Link>
+          )}
+          {showPublicNav ? (
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>Sign In</Button>
+              <Button size="sm" className="bg-secondary text-secondary-foreground hover:bg-secondary/90" onClick={() => navigate('/register')}>
+                Sign Up
+              </Button>
+            </div>
+          ) : (
             <>
               <Link to={dashboardPath} className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
                 <LayoutDashboard className="h-4 w-4" /> Dashboard
               </Link>
               <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground">{user.name}</span>
+                <span className="text-sm text-muted-foreground">{user?.full_name || user?.email}</span>
                 <Button variant="outline" size="sm" onClick={() => { logout(); navigate('/'); }}>
                   <LogOut className="mr-1.5 h-3.5 w-3.5" /> Logout
                 </Button>
               </div>
             </>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>Sign In</Button>
-              <Button size="sm" className="bg-secondary text-secondary-foreground hover:bg-secondary/90" onClick={() => navigate('/register')}>
-                Get Started
-              </Button>
-            </div>
           )}
         </nav>
 
@@ -58,16 +67,18 @@ export const Navbar = () => {
       {mobileOpen && (
         <div className="border-t border-border bg-card p-4 md:hidden animate-fade-in">
           <div className="flex flex-col gap-3">
-            <Link to="/browse-contractors" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">Find Contractors</Link>
-            {user ? (
+            {!forcePublic && (
+              <Link to="/browse-contractors" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">Find Contractors</Link>
+            )}
+            {showPublicNav ? (
               <>
-                <Link to={dashboardPath} onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">Dashboard</Link>
-                <button onClick={() => { logout(); navigate('/'); setMobileOpen(false); }} className="text-left text-sm font-medium text-destructive">Logout</button>
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">Sign In</Link>
+                <Link to="/register" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-secondary">Sign Up</Link>
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">Sign In</Link>
-                <Link to="/register" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-secondary">Get Started</Link>
+                <Link to={dashboardPath} onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">Dashboard</Link>
+                <button onClick={() => { logout(); navigate('/'); setMobileOpen(false); }} className="text-left text-sm font-medium text-destructive">Logout</button>
               </>
             )}
           </div>

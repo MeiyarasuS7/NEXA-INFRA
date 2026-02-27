@@ -140,3 +140,30 @@
     @apply bg-card/80 backdrop-blur-md border border-border/50 shadow-sm;
   }
 }
+
+@layer utilities {
+  /* ── Scroll-reveal base ── */
+  .sr {
+    opacity: 0;
+    transition: opacity 0.65s ease-out, transform 0.65s ease-out;
+    will-change: opacity, transform;
+  }
+  .sr.sr-up    { transform: translateY(44px); }
+  .sr.sr-right { transform: translateX(60px); }
+
+  /* JS adds sr-done when element enters viewport */
+  .sr.sr-done {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+
+  /* ── Hero: fires on page load (above the fold) ── */
+  @keyframes hero-fade-up {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-animate {
+    animation: hero-fade-up 0.8s ease-out forwards;
+    opacity: 0;
+  }
+}
