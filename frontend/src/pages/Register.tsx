@@ -32,7 +32,7 @@ const Register = () => {
               <HardHat className="h-6 w-6 text-secondary-foreground" />
             </div>
             <h1 className="mt-4 font-heading text-2xl font-bold text-foreground">Create your account</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Join NEXA-INFRA today</p>
+            <p className="mt-1 text-sm text-muted-foreground">Join NEXA INFRA today</p>
           </div>
 
           {/* Role selector */}

@@ -1,4 +1,4 @@
-import { MetricCard } from "@/components/MetricCard";
+import { PageHeader, StatCard } from "@/pages/admin";
 import { Users, FolderKanban, DollarSign, TrendingUp, Star, AlertTriangle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 
@@ -22,18 +22,18 @@ const statusDistribution = [
 
 const AdminAnalytics = () => (
   <div className="space-y-6">
-    <div>
-      <h1 className="font-heading text-2xl font-bold text-foreground">Platform Analytics</h1>
-      <p className="text-sm text-muted-foreground">Comprehensive platform performance overview</p>
-    </div>
+    <PageHeader
+      title="Platform Analytics"
+      description="Comprehensive platform performance overview"
+    />
 
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-      <MetricCard title="Total Users" value="8,432" icon={Users} trend={{ value: 14, positive: true }} />
-      <MetricCard title="Contractors" value="2,547" icon={Users} trend={{ value: 12, positive: true }} />
-      <MetricCard title="Projects" value="1,289" icon={FolderKanban} trend={{ value: 8, positive: true }} />
-      <MetricCard title="Revenue (MTD)" value="$140K" icon={DollarSign} trend={{ value: 15, positive: true }} />
-      <MetricCard title="Avg Rating" value="4.7" icon={Star} />
-      <MetricCard title="Disputes" value="7" icon={AlertTriangle} trend={{ value: 3, positive: false }} />
+      <StatCard title="Total Users" value="8,432" icon={Users} trend={{ value: 14, positive: true }} />
+      <StatCard title="Contractors" value="2,547" icon={Users} trend={{ value: 12, positive: true }} />
+      <StatCard title="Projects" value="1,289" icon={FolderKanban} trend={{ value: 8, positive: true }} />
+      <StatCard title="Revenue (MTD)" value="$140K" icon={DollarSign} trend={{ value: 15, positive: true }} />
+      <StatCard title="Avg Rating" value="4.7" icon={Star} />
+      <StatCard title="Disputes" value="7" icon={AlertTriangle} trend={{ value: 3, positive: false }} />
     </div>
 
     <div className="grid gap-6 lg:grid-cols-2">

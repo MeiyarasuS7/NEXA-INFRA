@@ -1,14 +1,21 @@
+import { useState } from "react";
 import { MOCK_CONTRACTORS } from "@/data/mock";
 import { StatusBadge } from "@/components/StatusBadge";
-import { CheckCircle, XCircle, Star, MapPin, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { PageHeader, SearchFilter, ActionButton } from "@/pages/admin";
+import { CheckCircle, XCircle, Star, MapPin } from "lucide-react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const AdminContractors = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"ALL" | "PENDING" | "APPROVED" | "REJECTED">("ALL");
+
+  const filters = (["ALL", "PENDING", "APPROVED", "REJECTED"] as const).map(status => ({
+    label: status === "ALL" ? "All" : status.charAt(0) + status.slice(1).toLowerCase(),
+    value: status,
+    active: filter === status,
+    onClick: () => setFilter(status)
+  }));
 
   const filtered = MOCK_CONTRACTORS.filter(c => {
     const matchSearch = c.businessName.toLowerCase().includes(search.toLowerCase()) || c.location.toLowerCase().includes(search.toLowerCase());
@@ -18,22 +25,17 @@ const AdminContractors = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-foreground">Contractor Management</h1>
-        <p className="text-sm text-muted-foreground">Approve, reject, and manage contractors</p>
-      </div>
+      <PageHeader
+        title="Contractor Management"
+        description="Approve, reject, and manage contractors"
+      />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search contractors..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
-        </div>
-        {(["ALL", "PENDING", "APPROVED", "REJECTED"] as const).map(s => (
-          <Button key={s} variant={filter === s ? "default" : "outline"} size="sm" onClick={() => setFilter(s)}>
-            {s === "ALL" ? "All" : s.charAt(0) + s.slice(1).toLowerCase()}
-          </Button>
-        ))}
-      </div>
+      <SearchFilter
+        value={search}
+        onChange={setSearch}
+        placeholder="Search contractors..."
+        filters={filters}
+      />
 
       <div className="rounded-lg border border-border bg-card shadow-card overflow-hidden">
         <Table>

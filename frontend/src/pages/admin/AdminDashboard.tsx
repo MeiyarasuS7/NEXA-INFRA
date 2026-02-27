@@ -1,8 +1,8 @@
-import { MetricCard } from "@/components/MetricCard";
 import { ProjectCard } from "@/components/ProjectCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { MOCK_CONTRACTORS, MOCK_PROJECTS } from "@/data/mock";
-import { Users, FolderKanban, DollarSign, TrendingUp, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { PageHeader, StatCard } from "@/pages/admin";
+import { Users, FolderKanban, DollarSign, TrendingUp, CheckCircle } from "lucide-react";
 
 const AdminDashboard = () => {
   const pendingContractors = MOCK_CONTRACTORS.filter(c => c.status === 'PENDING');
@@ -10,17 +10,17 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-foreground">Admin Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Overview of platform activity</p>
-      </div>
+      <PageHeader
+        title="Admin Dashboard"
+        description="Overview of platform activity"
+      />
 
       {/* Metrics */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard title="Total Contractors" value="2,547" icon={Users} trend={{ value: 12, positive: true }} />
-        <MetricCard title="Active Projects" value="342" icon={FolderKanban} trend={{ value: 8, positive: true }} />
-        <MetricCard title="Revenue (MTD)" value="$1.2M" icon={DollarSign} trend={{ value: 15, positive: true }} />
-        <MetricCard title="Completion Rate" value="94%" icon={TrendingUp} trend={{ value: 2, positive: true }} />
+        <StatCard title="Total Contractors" value="2,547" icon={Users} trend={{ value: 12, positive: true }} />
+        <StatCard title="Active Projects" value="342" icon={FolderKanban} trend={{ value: 8, positive: true }} />
+        <StatCard title="Revenue (MTD)" value="$1.2M" icon={DollarSign} trend={{ value: 15, positive: true }} />
+        <StatCard title="Completion Rate" value="94%" icon={TrendingUp} trend={{ value: 2, positive: true }} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

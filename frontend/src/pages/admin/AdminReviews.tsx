@@ -1,13 +1,14 @@
 import { MOCK_REVIEWS } from "@/data/mock";
+import { PageHeader } from "@/pages/admin";
 import { Star, Flag, CheckCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AdminReviews = () => (
   <div className="space-y-6">
-    <div>
-      <h1 className="font-heading text-2xl font-bold text-foreground">Review Moderation</h1>
-      <p className="text-sm text-muted-foreground">Monitor and moderate platform reviews</p>
-    </div>
+    <PageHeader
+      title="Review Moderation"
+      description="Monitor and moderate platform reviews"
+    />
 
     <div className="space-y-4">
       {MOCK_REVIEWS.map(r => (

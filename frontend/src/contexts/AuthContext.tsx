@@ -18,7 +18,7 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 const MOCK_USERS: Record<UserRole, User> = {
-  SUPER_ADMIN: { id: '1', name: 'Admin User', email: 'admin@buildpro.com', role: 'SUPER_ADMIN', createdAt: '2024-01-01' },
+  SUPER_ADMIN: { id: '1', name: 'Admin User', email: 'admin@nexa-infra.com', role: 'SUPER_ADMIN', createdAt: '2024-01-01' },
   CONTRACTOR: { id: '2', name: 'James Wilson', email: 'james@contractor.com', role: 'CONTRACTOR', createdAt: '2024-02-15' },
   USER: { id: '3', name: 'Sarah Chen', email: 'sarah@email.com', role: 'USER', createdAt: '2024-03-10' },
 };

@@ -2,8 +2,8 @@ import { MOCK_PROJECTS } from "@/data/mock";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { PageHeader, StatCard } from "@/pages/admin";
 import { DollarSign, CheckCircle, Clock, AlertTriangle } from "lucide-react";
-import { MetricCard } from "@/components/MetricCard";
 
 const MOCK_PAYMENTS = MOCK_PROJECTS.map((p, i) => ({
   id: `pay-${p.id}`,
@@ -17,16 +17,16 @@ const MOCK_PAYMENTS = MOCK_PROJECTS.map((p, i) => ({
 
 const AdminPayments = () => (
   <div className="space-y-6">
-    <div>
-      <h1 className="font-heading text-2xl font-bold text-foreground">Payment Verification</h1>
-      <p className="text-sm text-muted-foreground">Verify and track all platform payments</p>
-    </div>
+    <PageHeader
+      title="Payment Verification"
+      description="Verify and track all platform payments"
+    />
 
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <MetricCard title="Total Revenue" value="$353K" icon={DollarSign} trend={{ value: 12, positive: true }} />
-      <MetricCard title="Verified" value={MOCK_PAYMENTS.filter(p => p.status === "VERIFIED").length} icon={CheckCircle} />
-      <MetricCard title="Pending" value={MOCK_PAYMENTS.filter(p => p.status === "PENDING").length} icon={Clock} />
-      <MetricCard title="Disputed" value={MOCK_PAYMENTS.filter(p => p.status === "DISPUTED").length} icon={AlertTriangle} />
+      <StatCard title="Total Revenue" value="$353K" icon={DollarSign} trend={{ value: 12, positive: true }} />
+      <StatCard title="Verified" value={MOCK_PAYMENTS.filter(p => p.status === "VERIFIED").length} icon={CheckCircle} />
+      <StatCard title="Pending" value={MOCK_PAYMENTS.filter(p => p.status === "PENDING").length} icon={Clock} />
+      <StatCard title="Disputed" value={MOCK_PAYMENTS.filter(p => p.status === "DISPUTED").length} icon={AlertTriangle} />
     </div>
 
     <div className="rounded-lg border border-border bg-card shadow-card overflow-hidden">

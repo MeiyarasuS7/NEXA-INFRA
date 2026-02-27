@@ -1,16 +1,17 @@
+import { PageHeader } from "@/pages/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Settings, Shield, Bell, Globe, DollarSign } from "lucide-react";
+import { Settings, Shield, Bell, DollarSign } from "lucide-react";
 
 const AdminSettings = () => (
   <div className="space-y-6 max-w-3xl">
-    <div>
-      <h1 className="font-heading text-2xl font-bold text-foreground">System Settings</h1>
-      <p className="text-sm text-muted-foreground">Manage platform configuration</p>
-    </div>
+    <PageHeader
+      title="System Settings"
+      description="Manage platform configuration"
+    />
 
     {/* General */}
     <div className="rounded-lg border border-border bg-card p-5 shadow-card space-y-4">
@@ -21,11 +22,11 @@ const AdminSettings = () => (
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label>Platform Name</Label>
-          <Input defaultValue="BuildPro" />
+          <Input defaultValue="NEXA INFRA" />
         </div>
         <div className="space-y-1.5">
           <Label>Support Email</Label>
-          <Input defaultValue="support@buildpro.com" />
+          <Input defaultValue="support@nexa-infra.com" />
         </div>
       </div>
     </div>

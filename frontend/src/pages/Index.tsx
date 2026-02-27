@@ -70,7 +70,7 @@ const Index = () => {
       <section className="py-16 lg:py-24">
         <div className="container">
           <div className="text-center">
-            <h2 className="font-heading text-3xl font-bold text-foreground">How NEXA-INFRA Works</h2>
+            <h2 className="font-heading text-3xl font-bold text-foreground">How NEXA INFRA Works</h2>
             <p className="mt-2 text-muted-foreground">Three simple steps to your dream project</p>
           </div>
           <div className="mt-12 grid gap-8 md:grid-cols-3">

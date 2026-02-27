@@ -31,7 +31,7 @@ const Login = () => {
               <HardHat className="h-6 w-6 text-secondary-foreground" />
             </div>
             <h1 className="mt-4 font-heading text-2xl font-bold text-foreground">Welcome back</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Sign in to your NEXA-INFRA account</p>
+            <p className="mt-1 text-sm text-muted-foreground">Sign in to your NEXA INFRA account</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

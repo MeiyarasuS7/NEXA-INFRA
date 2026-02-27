@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Minimize2 } from "lucide-react";
+import { MessageSquare, X, Send, Minimize2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { groqService } from "@/services/groq";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Message {
   id: string;
@@ -11,16 +13,70 @@ interface Message {
   timestamp: Date;
 }
 
+// Mock function to get user-specific stats (replace with real API call)
+const getUserStats = (role: string | null) => {
+  if (!role) return null;
+  
+  switch (role) {
+    case 'SUPER_ADMIN':
+      return {
+        totalContractors: 2547,
+        activeProjects: 342,
+        pendingApprovals: 12,
+        monthlyRevenue: '$1.2M',
+        disputes: 7,
+        completionRate: '94%',
+      };
+    case 'CONTRACTOR':
+      return {
+        activeProjects: 3,
+        completedProjects: 89,
+        rating: 4.8,
+        totalEarnings: '$245K',
+        pendingReviews: 2,
+      };
+    case 'USER':
+      return {
+        activeProjects: 2,
+        totalProjects: 5,
+        completedProjects: 3,
+        pendingPayments: 1,
+      };
+    default:
+      return null;
+  }
+};
+
+const getGreeting = (userName: string | null, userRole: string | null) => {
+  if (!userName) {
+    return "Hello! I'm NEXA AI. I'm always here to help. How can I assist you today?";
+  }
+  
+  const timeOfDay = new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening';
+  
+  switch (userRole) {
+    case 'SUPER_ADMIN':
+      return `Good ${timeOfDay}, ${userName}! I'm NEXA AI, your admin assistant. I can help you with platform statistics, contractor approvals, project monitoring, and more. What would you like to know?`;
+    case 'CONTRACTOR':
+      return `Good ${timeOfDay}, ${userName}! I'm NEXA AI, here to help you manage your projects and grow your business. How can I assist you today?`;
+    case 'USER':
+      return `Good ${timeOfDay}, ${userName}! I'm NEXA AI, your project assistant. I can help you find contractors, manage projects, and answer any questions. What can I help you with?`;
+    default:
+      return `Hello, ${userName}! I'm NEXA AI. How can I assist you today?`;
+  }
+};
+
 export const Chatbot = () => {
+  const { user, role } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "Hello! I'm NEXA AI. I'm always here to help. How can I assist you today?",
-      sender: 'bot',
-      timestamp: new Date(),
-    }
-  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userStats] = useState(() => getUserStats(role));
+  const [messages, setMessages] = useState<Message[]>(() => [{
+    id: '1',
+    text: getGreeting(user?.full_name || null, role),
+    sender: 'bot',
+    timestamp: new Date(),
+  }]);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -32,8 +88,8 @@ export const Chatbot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+  const handleSend = async () => {
+    if (!inputValue.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -43,24 +99,70 @@ export const Chatbot = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputValue;
     setInputValue("");
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      // Prepare conversation history for Groq API
+      const conversationHistory = messages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' as const : 'assistant' as const,
+        content: msg.text
+      }));
+
+      // Prepare user context with role-specific data
+      const userContext = {
+        user: user || null,
+        stats: userStats,
+      };
+
+      // Get response from Groq API with user context
+      const botResponse = await groqService.getResponse(
+        currentInput, 
+        conversationHistory,
+        userContext
+      );
+
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I'm currently in demo mode. In production, I can help you with:\n\n• Finding contractors\n• Project management\n• Payment tracking\n• Answering questions\n• Technical support",
+        text: botResponse,
         sender: 'bot',
         timestamp: new Date(),
       };
+      
       setMessages(prev => [...prev, botMessage]);
-    }, 1000);
+    } catch (error) {
+      console.error('Error getting bot response:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I apologize, but I'm having trouble responding right now. Please try again in a moment.",
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  // Get role-specific suggestions
+  const getSuggestions = () => {
+    switch (role) {
+      case 'SUPER_ADMIN':
+        return "Show stats, Pending approvals, Active disputes";
+      case 'CONTRACTOR':
+        return "My projects, Earnings, Client reviews";
+      case 'USER':
+        return "Find contractors, Track projects, Payment help";
+      default:
+        return "Find contractors, Track projects, Payment help";
     }
   };
 
@@ -113,7 +215,7 @@ export const Chatbot = () => {
         <div className="border-b border-border bg-muted/30 px-5 py-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span>💡</span>
-            <span>Popular: Find contractors, Track projects, Payment help</span>
+            <span>Popular: {getSuggestions()}</span>
           </div>
         </div>
 
@@ -146,6 +248,16 @@ export const Chatbot = () => {
               </div>
             </div>
           ))}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="max-w-[80%] rounded-2xl px-4 py-2.5 text-sm bg-muted text-foreground">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Thinking...</span>
+                </div>
+              </div>
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
 
@@ -158,13 +270,19 @@ export const Chatbot = () => {
               onKeyPress={handleKeyPress}
               placeholder="Ask me anything..."
               className="flex-1 border-muted"
+              disabled={isLoading}
             />
             <Button
               onClick={handleSend}
               size="icon"
+              disabled={isLoading || !inputValue.trim()}
               className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shrink-0"
             >
-              <Send className="h-4 w-4" />
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </div>
           <p className="mt-2 text-center text-xs text-muted-foreground">

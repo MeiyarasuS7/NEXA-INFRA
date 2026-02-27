@@ -1,7 +1,8 @@
 import { MOCK_PROJECTS } from "@/data/mock";
 import { StatusBadge } from "@/components/StatusBadge";
-import { Button } from "@/components/ui/button";
+import { PageHeader, ActionButton } from "@/pages/admin";
 import { AlertTriangle, MessageSquare, CheckCircle, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const MOCK_DISPUTES = MOCK_PROJECTS.filter(p => p.status === "DISPUTED").map(p => ({
   id: `disp-${p.id}`,
@@ -25,10 +26,10 @@ const statusMap = { OPEN: "DISPUTED", UNDER_REVIEW: "PENDING", RESOLVED: "COMPLE
 
 const AdminDisputes = () => (
   <div className="space-y-6">
-    <div>
-      <h1 className="font-heading text-2xl font-bold text-foreground">Dispute Resolution Center</h1>
-      <p className="text-sm text-muted-foreground">Review and resolve platform disputes</p>
-    </div>
+    <PageHeader
+      title="Dispute Resolution Center"
+      description="Review and resolve platform disputes"
+    />
 
     <div className="space-y-4">
       {ALL_DISPUTES.map(d => (

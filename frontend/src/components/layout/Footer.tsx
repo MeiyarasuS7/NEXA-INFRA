@@ -8,7 +8,7 @@ export const Footer = () => (
         <div>
           <div className="flex items-center gap-2">
             <HardHat className="h-5 w-5 text-secondary" />
-            <span className="font-heading text-lg font-bold">BuildPro</span>
+            <span className="font-heading text-lg font-bold">NEXA INFRA</span>
           </div>
           <p className="mt-3 text-sm text-primary-foreground/70">
             Connecting homeowners with trusted construction professionals since 2024.
@@ -37,7 +37,7 @@ export const Footer = () => (
         </div>
       </div>
       <div className="mt-8 border-t border-primary-foreground/10 pt-6 text-center text-xs text-primary-foreground/50">
-        © 2026 BuildPro. All rights reserved.
+        © 2026 NEXA INFRA. All rights reserved.
       </div>
     </div>
   </footer>
