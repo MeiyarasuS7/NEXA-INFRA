@@ -5,33 +5,20 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { HardHat, Mail, Lock, AlertCircle, X } from "lucide-react";
-
-const ADMIN_EMAIL = 'aamanojkumar190@gmail.com';
-const REGISTRY_KEY = 'nexa_infra_user_registry';
+import { HardHat, Mail, Lock } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, isLoading, error, clearError } = useAuth();
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = await login(email, password);
-    if (!ok) return;
-    if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-      navigate("/admin/dashboard");
-      return;
-    }
-    try {
-      const registry = JSON.parse(localStorage.getItem(REGISTRY_KEY) || '{}');
-      const entry = registry[email.toLowerCase()];
-      if (entry?.role === 'CONTRACTOR') navigate("/contractor/dashboard");
-      else navigate("/user/dashboard");
-    } catch {
-      navigate("/user/dashboard");
-    }
+    await login(email, password);
+    if (email.includes("admin")) navigate("/admin/dashboard");
+    else if (email.includes("contractor")) navigate("/contractor/dashboard");
+    else navigate("/user/dashboard");
   };
 
   return (
@@ -47,13 +34,6 @@ const Login = () => {
             <p className="mt-1 text-sm text-muted-foreground">Sign in to your NEXA INFRA account</p>
           </div>
 
-          {error && (
-            <div className="mb-4 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-              <span className="flex-1">{error}</span>
-              <button onClick={clearError} className="shrink-0"><X className="h-4 w-4" /></button>
-            </div>
-          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="email">Email</Label>
@@ -75,7 +55,7 @@ const Login = () => {
           </form>
 
           <div className="mt-4 text-center text-sm text-muted-foreground">
-            Admin login: <span className="font-medium">{ADMIN_EMAIL}</span>
+            Tip: Use <span className="font-medium">admin@</span>, <span className="font-medium">contractor@</span>, or any email to test different roles.
           </div>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">

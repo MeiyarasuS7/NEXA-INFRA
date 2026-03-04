@@ -30,6 +30,11 @@ export const Navbar = ({ forcePublic = false }: NavbarProps) => {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-6 md:flex">
+          {!forcePublic && (
+            <Link to="/browse-contractors" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              Find Contractors
+            </Link>
+          )}
           {showPublicNav ? (
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>Sign In</Button>
@@ -62,6 +67,9 @@ export const Navbar = ({ forcePublic = false }: NavbarProps) => {
       {mobileOpen && (
         <div className="border-t border-border bg-card p-4 md:hidden animate-fade-in">
           <div className="flex flex-col gap-3">
+            {!forcePublic && (
+              <Link to="/browse-contractors" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">Find Contractors</Link>
+            )}
             {showPublicNav ? (
               <>
                 <Link to="/login" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground">Sign In</Link>

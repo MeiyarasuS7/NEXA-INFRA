@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { HardHat, User, Mail, Lock, AlertCircle, X } from "lucide-react";
+import { HardHat, User, Mail, Lock } from "lucide-react";
 import type { UserRole } from "@/types";
 
 const Register = () => {
@@ -13,13 +13,12 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("USER");
-  const { register, isLoading, error, clearError } = useAuth();
+  const { register, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = await register(name, email, password, role);
-    if (!ok) return;
+    await register(name, email, password, role);
     navigate(role === "CONTRACTOR" ? "/contractor/dashboard" : "/user/dashboard");
   };
 
@@ -36,13 +35,6 @@ const Register = () => {
             <p className="mt-1 text-sm text-muted-foreground">Join NEXA INFRA today</p>
           </div>
 
-          {error && (
-            <div className="mb-4 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-              <span className="flex-1">{error}</span>
-              <button onClick={clearError} className="shrink-0"><X className="h-4 w-4" /></button>
-            </div>
-          )}
           {/* Role selector */}
           <div className="mb-6 flex overflow-hidden rounded-lg border border-border">
             {(["USER", "CONTRACTOR"] as const).map(r => (

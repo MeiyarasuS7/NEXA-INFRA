@@ -142,67 +142,35 @@
 }
 
 @layer utilities {
-  /* ── Legacy sr system (kept for compatibility) ── */
-  .sr {
-    opacity: 0;
-    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, transform;
-  }
-  .sr.sr-up    { transform: translateY(44px); }
-  .sr.sr-right { transform: translateX(60px); }
-  .sr.sr-done  { opacity: 1; transform: translate(0, 0); }
-
-  /* ── New scroll-reveal system ── */
+  /* Hidden by default — revealed by scroll listener in JS */
   .scroll-reveal {
     opacity: 0;
-    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
     will-change: opacity, transform;
   }
-  .scroll-reveal.fade-up    { transform: translateY(44px); }
-  .scroll-reveal.fade-down  { transform: translateY(-44px); }
-  .scroll-reveal.slide-left { transform: translateX(-64px); }
-  .scroll-reveal.slide-right{ transform: translateX(64px); }
-  .scroll-reveal.zoom-in    { transform: scale(0.88); }
-  .scroll-reveal.zoom-up    { transform: scale(0.92) translateY(24px); }
-  .scroll-reveal.fade-in    { transform: none; }
-  .scroll-reveal.flip-up    { transform: perspective(600px) rotateX(18deg) translateY(24px); }
 
+  .scroll-reveal.slide-right {
+    transform: translateX(60px);
+  }
+
+  .scroll-reveal.fade-up {
+    transform: translateY(40px);
+  }
+
+  /* JS adds this class when element scrolls into view */
   .scroll-reveal.visible {
     opacity: 1;
-    transform: translateY(0) translateX(0) scale(1) rotateX(0);
+    transform: translate(0, 0);
   }
 
-  .scroll-reveal.duration-slow { transition-duration: 0.95s; }
-  .scroll-reveal.duration-fast { transition-duration: 0.4s; }
-
-  /* pop-in: bouncy spring for stat numbers */
-  .scroll-reveal.pop-in { transform: scale(0.7) translateY(12px); }
-  .scroll-reveal.pop-in.visible {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  /* ── Page-load hero animation ── */
+  /* Hero: fires on page load (above the fold, not scroll-triggered) */
   @keyframes hero-fade-up {
-    from { opacity: 0; transform: translateY(32px); }
+    from { opacity: 0; transform: translateY(30px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
   .hero-animate {
-    animation: hero-fade-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: hero-fade-up 0.75s ease-out forwards;
     opacity: 0;
   }
-
-  /* ── Misc keyframes ── */
-  @keyframes line-grow-x {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
-  }
-  .animate-line-x { animation: line-grow-x 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-8px); }
-  }
-  .animate-float { animation: float 3.5s ease-in-out infinite; }
 }
