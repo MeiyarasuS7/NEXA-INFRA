@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -89,6 +89,7 @@ const Index = () => {
         <div className="absolute inset-0">
           <img src={heroImage} alt="Construction site" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/97 via-primary/85 to-primary/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent" />
         </div>
 
         <div className="container relative py-28 lg:py-44">
