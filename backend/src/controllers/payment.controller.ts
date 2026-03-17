@@ -31,7 +31,7 @@ export const createPaymentIntent = catchAsync(
     }
 
     // Check permission
-    if (project.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (project.userId.toString() !== req.user.userId && req.user.role !== 'super_admin') {
       return next(new AppError('Only project owner can create payments', 403));
     }
 
@@ -97,7 +97,7 @@ export const confirmPayment = catchAsync(
     }
 
     // Check permission
-    if (payment.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (payment.userId.toString() !== req.user.userId && req.user.role !== 'super_admin') {
       return next(new AppError('You do not have permission to confirm this payment', 403));
     }
 
@@ -204,7 +204,7 @@ export const getPayment = catchAsync(
     // Check permission
     const isOwner = payment.userId._id.toString() === req.user.userId;
     const isContractor = payment.contractorId?._id.toString() === req.user.userId;
-    const isAdmin = req.user.role === 'admin';
+    const isAdmin = req.user.role === 'super_admin';
 
     if (!isOwner && !isContractor && !isAdmin) {
       return next(new AppError('You do not have permission to view this payment', 403));
@@ -245,7 +245,7 @@ export const requestRefund = catchAsync(
     }
 
     // Check permission
-    if (payment.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (payment.userId.toString() !== req.user.userId && req.user.role !== 'super_admin') {
       return next(new AppError('You do not have permission to request refund for this payment', 403));
     }
 
@@ -278,7 +278,7 @@ export const processRefund = catchAsync(
       return next(new AppError('Authentication required', 401));
     }
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'super_admin') {
       return next(new AppError('Only admins can process refunds', 403));
     }
 

@@ -41,8 +41,8 @@ const queryClient = new QueryClient();
 
 const DashboardRedirect = () => {
   const { role } = useAuth();
-  if (role === 'SUPER_ADMIN') return <Navigate to="/admin/dashboard" replace />;
-  if (role === 'CONTRACTOR') return <Navigate to="/contractor/dashboard" replace />;
+  if (role === 'super_admin') return <Navigate to="/admin/dashboard" replace />;
+  if (role === 'contractor') return <Navigate to="/contractor/dashboard" replace />;
   return <Navigate to="/user/dashboard" replace />;
 };
 
@@ -65,7 +65,7 @@ const App = () => (
             <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
 
             {/* Admin */}
-            <Route path="/admin" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']}><DashboardLayout /></ProtectedRoute>}>
+            <Route path="/admin" element={<ProtectedRoute allowedRoles={['super_admin']}><DashboardLayout /></ProtectedRoute>}>
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="contractors" element={<AdminContractors />} />
               <Route path="projects" element={<AdminProjects />} />
@@ -77,7 +77,7 @@ const App = () => (
             </Route>
 
             {/* Contractor */}
-            <Route path="/contractor" element={<ProtectedRoute allowedRoles={['CONTRACTOR']}><DashboardLayout /></ProtectedRoute>}>
+            <Route path="/contractor" element={<ProtectedRoute allowedRoles={['contractor']}><DashboardLayout /></ProtectedRoute>}>
               <Route path="dashboard" element={<ContractorDashboard />} />
               <Route path="projects" element={<ContractorProjects />} />
               <Route path="profile" element={<ContractorProfilePage />} />
@@ -86,7 +86,7 @@ const App = () => (
             </Route>
 
             {/* User */}
-            <Route path="/user" element={<ProtectedRoute allowedRoles={['USER']}><DashboardLayout /></ProtectedRoute>}>
+            <Route path="/user" element={<ProtectedRoute allowedRoles={['user']}><DashboardLayout /></ProtectedRoute>}>
               <Route path="dashboard" element={<UserDashboard />} />
               <Route path="projects" element={<UserProjects />} />
               <Route path="request-contractor" element={<UserRequestContractor />} />

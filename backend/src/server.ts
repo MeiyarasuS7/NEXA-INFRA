@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { config } from 'dotenv';
+import { createServer } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 import { connectDatabase } from './config/database';
 import { errorHandler } from './middleware/error.middleware';
 
@@ -95,20 +97,84 @@ const startServer = async () => {
     // Connect to MongoDB
     await connectDatabase();
     
-    // Start Express server
-    const server = app.listen(PORT, () => {
+    // Create HTTP server from Express app
+    const httpServer = createServer(app);
+    
+    // Initialize Socket.io
+    const io = new SocketIOServer(httpServer, {
+      cors: {
+        origin: process.env.FRONTEND_URL || 'http://localhost:8080',
+        methods: ['GET', 'POST'],
+        credentials: true,
+      },
+      transports: ['websocket', 'polling'],
+    });
+
+    // Socket.io event handlers
+    io.on('connection', (socket) => {
+      console.log(`🔌 New client connected: ${socket.id}`);
+
+      // Join a conversation room
+      socket.on('join_conversation', (conversationId: string, userId: string) => {
+        socket.join(`conversation_${conversationId}`);
+        console.log(`👤 User ${userId} joined conversation ${conversationId}`);
+        socket.emit('join_conversation_success', { conversationId });
+      });
+
+      // Send message to conversation
+      socket.on('send_message', (data: { conversationId: string; userId: string; message: string; timestamp: string }) => {
+        io.to(`conversation_${data.conversationId}`).emit('new_message', {
+          userId: data.userId,
+          message: data.message,
+          timestamp: data.timestamp,
+        });
+        console.log(`💬 Message sent in conversation ${data.conversationId}`);
+      });
+
+      // User typing indicator
+      socket.on('user_typing', (data: { conversationId: string; userId: string; userName: string }) => {
+        socket.to(`conversation_${data.conversationId}`).emit('user_typing', {
+          userId: data.userId,
+          userName: data.userName,
+        });
+      });
+
+      // User stopped typing
+      socket.on('user_stopped_typing', (data: { conversationId: string; userId: string }) => {
+        socket.to(`conversation_${data.conversationId}`).emit('user_stopped_typing', {
+          userId: data.userId,
+        });
+      });
+
+      // Leave conversation
+      socket.on('leave_conversation', (conversationId: string) => {
+        socket.leave(`conversation_${conversationId}`);
+        console.log(`👋 User left conversation ${conversationId}`);
+      });
+
+      // Handle disconnection
+      socket.on('disconnect', () => {
+        console.log(`❌ Client disconnected: ${socket.id}`);
+      });
+
+      // Error handling
+      socket.on('error', (error) => {
+        console.error(`⚠️ Socket error for ${socket.id}:`, error);
+      });
+    });
+    
+    // Start HTTP server
+    httpServer.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
       console.log(`📊 Health check: http://localhost:${PORT}/health`);
+      console.log(`🔌 WebSocket (Socket.io) enabled on port ${PORT}`);
     });
 
-    // Socket.io setup (for chat functionality)
-    // TODO: Initialize Socket.io server
-    
     // Graceful shutdown
     process.on('SIGTERM', () => {
       console.log('SIGTERM signal received: closing HTTP server');
-      server.close(() => {
+      httpServer.close(() => {
         console.log('HTTP server closed');
         process.exit(0);
       });
@@ -116,7 +182,7 @@ const startServer = async () => {
 
     process.on('SIGINT', () => {
       console.log('SIGINT signal received: closing HTTP server');
-      server.close(() => {
+      httpServer.close(() => {
         console.log('HTTP server closed');
         process.exit(0);
       });

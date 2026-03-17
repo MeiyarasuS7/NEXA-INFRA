@@ -48,7 +48,9 @@ export class AppError extends Error implements ApiError {
 }
 
 // Helper function to create async error handler
-export const catchAsync = (fn: Function) => {
+export const catchAsync = (
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
+) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };

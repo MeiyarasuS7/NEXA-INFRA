@@ -1,31 +1,28 @@
 // ============================= CORE TYPES =============================
 
-export type UserRole = 'SUPER_ADMIN' | 'CONTRACTOR' | 'USER';
+export type UserRole = 'super_admin' | 'contractor' | 'user';
 
 export type ProjectStatus = 
-  | 'REQUESTED' 
-  | 'PAYMENT_PENDING' 
-  | 'ADVANCE_CONFIRMED' 
-  | 'CONTRACTOR_ASSIGNED' 
-  | 'IN_PROGRESS' 
-  | 'COMPLETED' 
-  | 'REVIEW_PENDING' 
-  | 'CLOSED'
-  | 'DISPUTED';
+  | 'pending' 
+  | 'approved' 
+  | 'in_progress' 
+  | 'completed' 
+  | 'disputed' 
+  | 'cancelled';
 
 export type PaymentStatus = 
-  | 'INITIATED'
-  | 'PROOF_UPLOADED'
-  | 'UNDER_VERIFICATION'
-  | 'ADVANCE_CONFIRMED'
-  | 'REJECTED'
-  | 'REFUNDED';
+  | 'pending'
+  | 'processing'
+  | 'completed'
+  | 'failed'
+  | 'refunded'
+  | 'disputed';
 
 export type ContractorStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'REJECTED';
 
 export type ReviewStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'FLAGGED';
 
-export type DisputeStatus = 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED' | 'CLOSED';
+export type DisputeStatus = 'open' | 'under_review' | 'resolved' | 'closed' | 'escalated';
 
 export type NotificationType = 
   | 'payment_approved'

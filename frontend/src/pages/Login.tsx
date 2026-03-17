@@ -20,35 +20,10 @@ const Login = () => {
     clearError();
     
     const success = await login(email, password);
-    if (!success) return;
-    
-    // Admin email routing
-    if (email === ADMIN_EMAIL) {
-      navigate("/admin/dashboard");
-      return;
+    if (success) {
+      // Navigate to dashboard - DashboardRedirect will route to correct dashboard based on role
+      navigate("/dashboard");
     }
-    
-    // Get user role from registry for other users
-    try {
-      const registry = localStorage.getItem('nexa_infra_user_registry');
-      if (registry) {
-        const users = JSON.parse(registry);
-        const userData = users[email];
-        if (userData) {
-          if (userData.role === 'CONTRACTOR') {
-            navigate("/contractor/dashboard");
-          } else {
-            navigate("/user/dashboard");
-          }
-          return;
-        }
-      }
-    } catch {
-      // Fallback
-    }
-    
-    // Default fallback
-    navigate("/user/dashboard");
   };
 
   return (

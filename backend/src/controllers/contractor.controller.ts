@@ -113,7 +113,7 @@ export const updateContractor = catchAsync(
     }
 
     // Check permission (only contractor owner or admin can update)
-    if (req.user.role !== 'admin' && contractor.userId.toString() !== req.user.userId) {
+    if (req.user.role !== 'super_admin' && contractor.userId.toString() !== req.user.userId) {
       return next(new AppError('You do not have permission to update this profile', 403));
     }
 
@@ -174,7 +174,7 @@ export const addPortfolioItem = catchAsync(
     }
 
     // Check permission
-    if (contractor.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (contractor.userId.toString() !== req.user.userId && req.user.role !== 'super_admin') {
       return next(new AppError('You do not have permission to add portfolio items', 403));
     }
 
@@ -223,7 +223,7 @@ export const addCertification = catchAsync(
     }
 
     // Check permission
-    if (contractor.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (contractor.userId.toString() !== req.user.userId && req.user.role !== 'super_admin') {
       return next(new AppError('You do not have permission to add certifications', 403));
     }
 

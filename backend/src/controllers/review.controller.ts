@@ -194,7 +194,7 @@ export const updateReview = catchAsync(
     }
 
     // Check permission
-    if (review.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (review.userId.toString() !== req.user.userId && req.user.role !== 'super_admin') {
       return next(new AppError('You do not have permission to update this review', 403));
     }
 
@@ -252,7 +252,7 @@ export const respondToReview = catchAsync(
     }
 
     // Check permission (only contractor being reviewed can respond)
-    if (review.contractorId.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (review.contractorId.toString() !== req.user.userId && req.user.role !== 'super_admin') {
       return next(new AppError('Only the reviewed contractor can respond', 403));
     }
 
@@ -339,7 +339,7 @@ export const deleteReview = catchAsync(
     }
 
     // Check permission
-    if (review.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (review.userId.toString() !== req.user.userId && req.user.role !== 'super_admin') {
       return next(new AppError('You do not have permission to delete this review', 403));
     }
 

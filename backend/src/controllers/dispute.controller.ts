@@ -96,7 +96,7 @@ export const getDisputes = catchAsync(
     const query: any = {};
 
     // Filter by role - users and contractors see only their disputes, admins see all
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'super_admin') {
       const projects = await Project.find({
         $or: [{ userId: req.user.userId }, { contractorId: req.user.userId }],
       }).select('_id');
@@ -168,7 +168,7 @@ export const getDispute = catchAsync(
     const project = dispute.projectId as any;
     const isOwner = project.userId.toString() === req.user.userId;
     const isContractor = project.contractorId?.toString() === req.user.userId;
-    const isAdmin = req.user.role === 'admin';
+    const isAdmin = req.user.role === 'super_admin';
 
     if (!isOwner && !isContractor && !isAdmin) {
       return next(new AppError('You do not have permission to view this dispute', 403));
@@ -205,7 +205,7 @@ export const updateDispute = catchAsync(
     }
 
     // Check permission - only dispute creator can update
-    const isAdmin = req.user.role === 'admin';
+    const isAdmin = req.user.role === 'super_admin';
 
     if (dispute.raisedBy.toString() !== req.user.userId && !isAdmin) {
       return next(new AppError('You do not have permission to update this dispute', 403));
@@ -261,7 +261,7 @@ export const addEvidence = catchAsync(
     const project = dispute.projectId as any;
     const isOwner = project.userId.toString() === req.user.userId;
     const isContractor = project.contractorId?.toString() === req.user.userId;
-    const isAdmin = req.user.role === 'admin';
+    const isAdmin = req.user.role === 'super_admin';
 
     if (!isOwner && !isContractor && !isAdmin) {
       return next(new AppError('You do not have permission to add evidence to this dispute', 403));
@@ -295,7 +295,7 @@ export const resolveDispute = catchAsync(
       return next(new AppError('Authentication required', 401));
     }
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'super_admin') {
       return next(new AppError('Only admins can resolve disputes', 403));
     }
 
@@ -369,7 +369,7 @@ export const updateDisputeStatus = catchAsync(
       return next(new AppError('Authentication required', 401));
     }
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'super_admin') {
       return next(new AppError('Only admins can update dispute status', 403));
     }
 

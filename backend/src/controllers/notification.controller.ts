@@ -243,7 +243,7 @@ export const createNotification = catchAsync(
       return next(new AppError('Authentication required', 401));
     }
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'super_admin') {
       return next(new AppError('Only admins can create notifications', 403));
     }
 

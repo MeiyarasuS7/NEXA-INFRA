@@ -28,9 +28,9 @@ router.put('/:id', authenticate, updateDispute);
 router.post('/:id/evidence', authenticate, addEvidence);
 
 // Update dispute status (admin only)
-router.put('/:id/status', authenticate, authorize('admin'), updateDisputeStatus);
+router.put('/:id/status', authenticate, authorize('super_admin'), updateDisputeStatus);
 
 // Resolve dispute (admin only)
-router.post('/:id/resolve', authenticate, authorize('admin'), resolveDispute);
+router.post('/:id/resolve', authenticate, authorize('super_admin'), resolveDispute);
 
 export default router;

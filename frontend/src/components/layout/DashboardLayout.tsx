@@ -40,7 +40,7 @@ export const DashboardLayout = () => {
   const { role } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const links = role === 'SUPER_ADMIN' ? ADMIN_LINKS : role === 'CONTRACTOR' ? CONTRACTOR_LINKS : USER_LINKS;
+  const links = role === 'super_admin' ? ADMIN_LINKS : role === 'contractor' ? CONTRACTOR_LINKS : USER_LINKS;
 
   return (
     <div className="min-h-screen bg-background">

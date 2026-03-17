@@ -14,7 +14,7 @@ interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-export const DataTable = <T extends Record<string, any>>({
+export const DataTable = <T extends Record<string, unknown>>({
   data,
   columns,
   emptyMessage = "No data available"

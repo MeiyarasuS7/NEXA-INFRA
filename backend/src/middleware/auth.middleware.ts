@@ -4,6 +4,7 @@ import { AppError } from './error.middleware';
 import User from '../models/User';
 
 // Extend Express Request type to include user
+// eslint-disable-next-line @typescript-eslint/no-namespace
 declare global {
   namespace Express {
     interface Request {
@@ -78,7 +79,7 @@ export const authorize = (...roles: string[]) => {
 /**
  * Middleware to check if user is admin
  */
-export const isAdmin = authorize('admin');
+export const isAdmin = authorize('super_admin');
 
 /**
  * Middleware to check if user is contractor
@@ -93,4 +94,4 @@ export const isUser = authorize('user');
 /**
  * Middleware to check if user is contractor or admin
  */
-export const isContractorOrAdmin = authorize('contractor', 'admin');
+export const isContractorOrAdmin = authorize('contractor', 'super_admin');

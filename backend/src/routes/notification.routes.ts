@@ -26,7 +26,7 @@ router.put('/read-all', authenticate, markAllAsRead);
 router.delete('/archive-all', authenticate, archiveAllRead);
 
 // Create notification (admin only)
-router.post('/', authenticate, authorize('admin'), createNotification);
+router.post('/', authenticate, authorize('super_admin'), createNotification);
 
 // Get single notification (authenticated)
 router.get('/:id', authenticate, getNotification);

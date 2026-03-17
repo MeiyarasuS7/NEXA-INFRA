@@ -122,7 +122,7 @@ export const getProject = catchAsync(
 
     // Check access permission
     if (
-      req.user.role !== 'admin' &&
+      req.user.role !== 'super_admin' &&
       project.userId._id.toString() !== req.user.userId &&
       project.contractorId?._id.toString() !== req.user.userId
     ) {
@@ -159,7 +159,7 @@ export const updateProject = catchAsync(
     }
 
     // Check permission (only project owner or admin can update)
-    if (req.user.role !== 'admin' && project.userId.toString() !== req.user.userId) {
+    if (req.user.role !== 'super_admin' && project.userId.toString() !== req.user.userId) {
       return next(new AppError('You do not have permission to update this project', 403));
     }
 
@@ -219,7 +219,7 @@ export const deleteProject = catchAsync(
     }
 
     // Check permission
-    if (req.user.role !== 'admin' && project.userId.toString() !== req.user.userId) {
+    if (req.user.role !== 'super_admin' && project.userId.toString() !== req.user.userId) {
       return next(new AppError('You do not have permission to delete this project', 403));
     }
 
@@ -280,7 +280,7 @@ export const updateProjectStatus = catchAsync(
     // Check permission
     const isOwner = project.userId.toString() === req.user.userId;
     const isContractor = project.contractorId?.toString() === req.user.userId;
-    const isAdmin = req.user.role === 'admin';
+    const isAdmin = req.user.role === 'super_admin';
 
     if (!isOwner && !isContractor && !isAdmin) {
       return next(new AppError('You do not have permission to update this project status', 403));
@@ -331,7 +331,7 @@ export const assignContractor = catchAsync(
     }
 
     // Check permission (only project owner or admin)
-    if (req.user.role !== 'admin' && project.userId.toString() !== req.user.userId) {
+    if (req.user.role !== 'super_admin' && project.userId.toString() !== req.user.userId) {
       return next(new AppError('You do not have permission to assign a contractor', 403));
     }
 
@@ -382,7 +382,7 @@ export const addMilestone = catchAsync(
     const isOwner = project.userId.toString() === req.user.userId;
     const isContractor = project.contractorId?.toString() === req.user.userId;
 
-    if (!isOwner && !isContractor && req.user.role !== 'admin') {
+    if (!isOwner && !isContractor && req.user.role !== 'super_admin') {
       return next(new AppError('You do not have permission to add milestones', 403));
     }
 
@@ -434,7 +434,7 @@ export const updateMilestone = catchAsync(
     // Check permission
     const isContractor = project.contractorId?.toString() === req.user.userId;
 
-    if (!isContractor && req.user.role !== 'admin') {
+    if (!isContractor && req.user.role !== 'super_admin') {
       return next(new AppError('Only assigned contractor can update milestones', 403));
     }
 

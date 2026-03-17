@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 export interface JWTPayload {
   userId: string;
   email: string;
-  role: 'user' | 'contractor' | 'admin';
+  role: 'user' | 'contractor' | 'super_admin';
 }
 
 const JWT_SECRET: string = process.env.JWT_SECRET || 'your-fallback-secret-key-change-this';

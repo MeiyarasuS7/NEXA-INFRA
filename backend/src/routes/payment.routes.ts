@@ -35,6 +35,6 @@ router.get('/:id', authenticate, getPayment);
 router.post('/:id/refund', authenticate, requestRefund);
 
 // Process refund (admin only)
-router.post('/:id/process-refund', authenticate, authorize('admin'), processRefund);
+router.post('/:id/process-refund', authenticate, authorize('super_admin'), processRefund);
 
 export default router;

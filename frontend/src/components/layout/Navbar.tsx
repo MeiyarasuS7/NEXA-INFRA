@@ -13,7 +13,7 @@ export const Navbar = ({ forcePublic = false }: NavbarProps) => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const dashboardPath = role === 'SUPER_ADMIN' ? '/admin/dashboard' : role === 'CONTRACTOR' ? '/contractor/dashboard' : '/user/dashboard';
+  const dashboardPath = role === 'super_admin' ? '/admin/dashboard' : role === 'contractor' ? '/contractor/dashboard' : '/user/dashboard';
   
   // Show public navigation if forcePublic is true or user is not logged in
   const showPublicNav = forcePublic || !user;

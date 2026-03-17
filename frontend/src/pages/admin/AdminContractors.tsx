@@ -1,25 +1,66 @@
-import { useState } from "react";
-import { MOCK_CONTRACTORS } from "@/data/mock";
-import { StatusBadge } from "@/components/StatusBadge";
-import { PageHeader, SearchFilter, ActionButton } from "@/pages/admin";
-import { CheckCircle, XCircle, Star, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
+import { PageHeader, SearchFilter } from "@/pages/admin";
+import { CheckCircle, XCircle, Star } from "lucide-react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
+interface Contractor {
+  _id: string;
+  userId: { name: string; email: string; phone: string };
+  company?: string;
+  specialties: string[];
+  rating: number;
+  experience: number;
+  isVerified: boolean;
+  isActive: boolean;
+  availability: 'available' | 'busy' | 'unavailable';
+}
 
 const AdminContractors = () => {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<"ALL" | "PENDING" | "APPROVED" | "REJECTED">("ALL");
+  const [filter, setFilter] = useState<"ALL" | "VERIFIED" | "UNVERIFIED" | "ACTIVE" | "INACTIVE">("ALL");
+  const [contractors, setContractors] = useState<Contractor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem('nexa_auth_token');
 
-  const filters = (["ALL", "PENDING", "APPROVED", "REJECTED"] as const).map(status => ({
+  useEffect(() => {
+    const fetchContractors = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${API_BASE_URL}/admin/contractors`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const allContractors = Array.isArray(res.data.data?.contractors) ? res.data.data.contractors : [];
+        setContractors(allContractors);
+      } catch (err) {
+        console.error('Error fetching contractors:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchContractors();
+    }
+  }, [token]);
+
+  const filters = (["ALL", "VERIFIED", "UNVERIFIED", "ACTIVE", "INACTIVE"] as const).map(status => ({
     label: status === "ALL" ? "All" : status.charAt(0) + status.slice(1).toLowerCase(),
     value: status,
     active: filter === status,
     onClick: () => setFilter(status)
   }));
 
-  const filtered = MOCK_CONTRACTORS.filter(c => {
-    const matchSearch = c.businessName.toLowerCase().includes(search.toLowerCase()) || c.location.toLowerCase().includes(search.toLowerCase());
-    const matchFilter = filter === "ALL" || c.status === filter;
+  const filtered = contractors.filter(c => {
+    const matchSearch = (c.company || c.userId?.name || '').toLowerCase().includes(search.toLowerCase()) || (c.userId?.phone || '').includes(search);
+    const matchFilter = filter === "ALL" || 
+      (filter === "VERIFIED" && c.isVerified) ||
+      (filter === "UNVERIFIED" && !c.isVerified) ||
+      (filter === "ACTIVE" && c.isActive) ||
+      (filter === "INACTIVE" && !c.isActive);
     return matchSearch && matchFilter;
   });
 
@@ -37,65 +78,66 @@ const AdminContractors = () => {
         filters={filters}
       />
 
-      <div className="rounded-lg border border-border bg-card shadow-card overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Business Name</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Specialties</TableHead>
-              <TableHead>Rating</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.map(c => (
-              <TableRow key={c.id}>
-                <TableCell>
-                  <div>
-                    <p className="font-medium text-foreground">{c.businessName}</p>
-                    <p className="text-xs text-muted-foreground">{c.yearsExperience}y experience · {c.completedProjects} projects</p>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5" />{c.location}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {c.specialties.map(s => (
-                      <span key={s} className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{s}</span>
-                    ))}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5 fill-warning text-warning" />
-                    <span className="text-sm font-medium">{c.rating}</span>
-                  </span>
-                </TableCell>
-                <TableCell><StatusBadge status={c.status} /></TableCell>
-                <TableCell className="text-right">
-                  {c.status === "PENDING" ? (
-                    <div className="flex justify-end gap-2">
-                      <Button size="sm" variant="outline" className="text-success border-success/30 hover:bg-success/10">
-                        <CheckCircle className="mr-1 h-3.5 w-3.5" /> Approve
-                      </Button>
-                      <Button size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10">
-                        <XCircle className="mr-1 h-3.5 w-3.5" /> Reject
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button size="sm" variant="ghost">View</Button>
-                  )}
-                </TableCell>
+      {loading ? (
+        <div className="text-center py-8 text-muted-foreground">Loading contractors...</div>
+      ) : (
+        <div className="rounded-lg border border-border bg-card shadow-card overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Company / Name</TableHead>
+                <TableHead>Contact</TableHead>
+                <TableHead>Specialties</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {filtered.length > 0 ? filtered.map(c => (
+                <TableRow key={c._id}>
+                  <TableCell>
+                    <p className="font-medium text-foreground">{c.company || c.userId?.name}</p>
+                    <p className="text-xs text-muted-foreground">{c.userId?.email}</p>
+                  </TableCell>
+                  <TableCell>{c.userId?.phone || 'N/A'}</TableCell>
+                  <TableCell>
+                    <span className="text-sm text-muted-foreground">{c.specialties?.join(', ') || 'N/A'}</span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                      <span className="text-sm font-medium">{c.rating || 0}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span className={`h-2 w-2 rounded-full ${c.isVerified ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+                      <span className="text-sm">{c.isVerified ? 'Verified' : 'Pending'}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {!c.isVerified && (
+                      <div className="flex gap-2 justify-end">
+                        <Button size="sm" className="text-success border-success/30">
+                          <CheckCircle className="mr-1 h-3.5 w-3.5" /> Verify
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-destructive border-destructive/30">
+                          <XCircle className="mr-1 h-3.5 w-3.5" /> Reject
+                        </Button>
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No contractors found</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 };

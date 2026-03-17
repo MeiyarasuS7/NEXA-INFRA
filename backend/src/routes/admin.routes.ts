@@ -16,7 +16,7 @@ import { authenticate, authorize } from '../middleware/auth.middleware';
 const router = express.Router();
 
 // All routes require admin authentication
-router.use(authenticate, authorize('admin'));
+router.use(authenticate, authorize('super_admin'));
 
 // Analytics
 router.get('/analytics', getPlatformAnalytics);

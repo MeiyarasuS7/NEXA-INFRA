@@ -14,7 +14,7 @@ import mongoose from 'mongoose';
  */
 export const getPlatformAnalytics = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 
@@ -118,7 +118,7 @@ export const getPlatformAnalytics = catchAsync(
  */
 export const getUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 
@@ -172,7 +172,7 @@ export const getUsers = catchAsync(
  */
 export const getUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 
@@ -223,7 +223,7 @@ export const getUser = catchAsync(
  */
 export const updateUserStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 
@@ -262,7 +262,7 @@ export const updateUserStatus = catchAsync(
  */
 export const verifyContractor = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 
@@ -305,7 +305,7 @@ export const verifyContractor = catchAsync(
  */
 export const getContractors = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 
@@ -359,7 +359,7 @@ export const getContractors = catchAsync(
  */
 export const getProjects = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 
@@ -407,7 +407,7 @@ export const getProjects = catchAsync(
  */
 export const getPayments = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 
@@ -452,7 +452,7 @@ export const getPayments = catchAsync(
  */
 export const getDisputes = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 
@@ -499,7 +499,7 @@ export const getDisputes = catchAsync(
  */
 export const deleteUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
       return next(new AppError('Admin access required', 403));
     }
 

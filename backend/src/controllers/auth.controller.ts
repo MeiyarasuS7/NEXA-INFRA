@@ -20,7 +20,7 @@ export const register = catchAsync(
     }
 
     // Prevent registration with admin email
-    if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && role !== 'admin') {
+    if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && role !== 'super_admin') {
       return next(new AppError('This email is reserved for admin access', 400));
     }
 
@@ -31,7 +31,7 @@ export const register = catchAsync(
     }
 
     // Validate role
-    if (!['user', 'contractor', 'admin'].includes(role)) {
+    if (!['user', 'contractor', 'super_admin'].includes(role)) {
       return next(new AppError('Invalid role', 400));
     }
 
@@ -43,7 +43,7 @@ export const register = catchAsync(
       role,
       phone,
       location,
-      isVerified: role === 'admin', // Auto-verify admin
+      isVerified: role === 'super_admin', // Auto-verify admin
     });
 
     // If contractor, create contractor profile
@@ -73,7 +73,7 @@ export const register = catchAsync(
           id: user._id,
           email: user.email,
           name: user.name,
-          role: user.role,
+          role: user.role === 'super_admin' ? 'super_admin' : user.role,
           isVerified: user.isVerified,
         },
         token,

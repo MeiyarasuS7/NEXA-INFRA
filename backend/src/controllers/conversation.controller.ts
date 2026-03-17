@@ -290,7 +290,7 @@ export const deleteConversation = catchAsync(
     if (
       conversation.userId.toString() !== req.user.userId &&
       conversation.contractorId.toString() !== req.user.userId &&
-      req.user.role !== 'admin'
+      req.user.role !== 'super_admin'
     ) {
       return next(new AppError('You do not have permission to delete this conversation', 403));
     }

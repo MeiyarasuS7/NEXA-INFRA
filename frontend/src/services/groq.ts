@@ -25,8 +25,8 @@ interface GroqChatResponse {
 
 interface UserContext {
   user: User | null;
-  stats?: any; // User-specific statistics
-  recentActivity?: any[]; // Recent user activities
+  stats?: Record<string, unknown>; // User-specific statistics
+  recentActivity?: unknown[]; // Recent user activities
 }
 
 class GroqService {

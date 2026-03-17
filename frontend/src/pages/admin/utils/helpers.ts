@@ -148,7 +148,7 @@ export const filterBySearch = <T>(
 };
 
 // Debounce Function
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
   delay: number
 ): ((...args: Parameters<T>) => void) => {
@@ -161,10 +161,10 @@ export const debounce = <T extends (...args: any[]) => any>(
 };
 
 // Export Data to CSV
-export const exportToCSV = (data: any[], filename: string): void => {
+export const exportToCSV = (data: unknown[], filename: string): void => {
   if (data.length === 0) return;
   
-  const headers = Object.keys(data[0]);
+  const headers = Object.keys(data[0] as Record<string, unknown>);
   const csvContent = [
     headers.join(","),
     ...data.map(row =>
@@ -227,7 +227,7 @@ export const deepClone = <T>(obj: T): T => {
 };
 
 // Is Empty Object
-export const isEmptyObject = (obj: Record<string, any>): boolean => {
+export const isEmptyObject = (obj: Record<string, unknown>): boolean => {
   return Object.keys(obj).length === 0;
 };
 

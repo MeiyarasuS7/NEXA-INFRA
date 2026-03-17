@@ -12,7 +12,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("USER");
+  const [role, setRole] = useState<UserRole>("user");
   const { register, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ const Register = () => {
     const success = await register(name, email, password, role);
     if (!success) return;
     
-    navigate(role === "CONTRACTOR" ? "/contractor/dashboard" : "/user/dashboard");
+    navigate(role === "contractor" ? "/contractor/dashboard" : "/user/dashboard");
   };
 
   return (
@@ -41,10 +41,10 @@ const Register = () => {
 
           {/* Role selector */}
           <div className="mb-6 flex overflow-hidden rounded-lg border border-border">
-            {(["USER", "CONTRACTOR"] as const).map(r => (
+            {(["user", "contractor"] as const).map(r => (
               <button key={r} onClick={() => setRole(r)}
                 className={`flex-1 py-2.5 text-sm font-medium transition-colors ${role === r ? "bg-secondary text-secondary-foreground" : "bg-card text-muted-foreground hover:bg-muted"}`}>
-                {r === "USER" ? "Homeowner" : "Contractor"}
+                {r === "user" ? "Homeowner" : "Contractor"}
               </button>
             ))}
           </div>
@@ -58,10 +58,10 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="name">{role === "CONTRACTOR" ? "Business Name" : "Full Name"}</Label>
+              <Label htmlFor="name">{role === "contractor" ? "Business Name" : "Full Name"}</Label>
               <div className="relative mt-1.5">
                 <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input id="name" placeholder={role === "CONTRACTOR" ? "Your Construction Co." : "John Doe"} value={name} onChange={e => setName(e.target.value)} className="pl-10" required />
+                <Input id="name" placeholder={role === "contractor" ? "Your Construction Co." : "John Doe"} value={name} onChange={e => setName(e.target.value)} className="pl-10" required />
               </div>
             </div>
             <div>
