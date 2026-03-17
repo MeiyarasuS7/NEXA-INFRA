@@ -7,39 +7,7 @@ import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
-interface Contractor {
-  id: string;
-  businessName: string;
-  location: string;
-  specialties: string[];
-  status: string;
-}
-
-interface Project {
-  id: string;
-  title: string;
-  status: string;
-  budget: number;
-  userId: string;
-  createdAt: string;
-}
-
-interface Analytics {
-  users: {
-    total: number;
-    contractors: number;
-    verifiedContractors: number;
-  };
-  projects: {
-    total: number;
-  };
-  payments: {
-    totalRevenue: number;
-  };
-  disputes: {
-    open: number;
-  };
-}
+// Using types from @/types - no need to redefine here
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
