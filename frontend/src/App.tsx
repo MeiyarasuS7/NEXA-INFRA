@@ -36,6 +36,7 @@ import UserProjects from "./pages/user/UserProjects";
 import UserRequestContractor from "./pages/user/UserRequestContractor";
 import UserChat from "./pages/user/UserChat";
 import UserProfile from "./pages/user/UserProfile";
+import UserFindContractors from "./pages/user/UserFindContractors";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ const App = () => (
             {/* User */}
             <Route path="/user" element={<ProtectedRoute allowedRoles={['user']}><DashboardLayout /></ProtectedRoute>}>
               <Route path="dashboard" element={<UserDashboard />} />
+              <Route path="find-contractors" element={<UserFindContractors />} />
               <Route path="projects" element={<UserProjects />} />
               <Route path="request-contractor" element={<UserRequestContractor />} />
               <Route path="chat" element={<UserChat />} />

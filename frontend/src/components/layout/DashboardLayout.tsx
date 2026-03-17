@@ -30,6 +30,7 @@ const CONTRACTOR_LINKS = [
 
 const USER_LINKS = [
   { to: "/user/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/user/find-contractors", icon: Users, label: "Find Contractors" },
   { to: "/user/projects", icon: FolderKanban, label: "My Projects" },
   { to: "/user/request-contractor", icon: FileText, label: "Request Contractor" },
   { to: "/user/chat", icon: MessageSquare, label: "Messages" },
