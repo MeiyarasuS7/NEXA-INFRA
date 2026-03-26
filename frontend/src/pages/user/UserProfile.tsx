@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { API_BASE_URL } from "@/config/env";
+import { authStorage } from "@/lib/authStorage";
 import { UserCircle, Bell, Shield } from "lucide-react";
 
 interface UserProfileForm {
@@ -21,7 +22,7 @@ interface UserProfileForm {
 const UserProfile = () => {
   const { user, updateUser } = useAuth();
   const { toast } = useToast();
-  const token = localStorage.getItem("nexa_auth_token");
+  const token = authStorage.getToken();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<UserProfileForm>({

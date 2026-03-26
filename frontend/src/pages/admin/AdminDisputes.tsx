@@ -6,6 +6,7 @@ import { AlertTriangle, CheckCircle, XCircle, Clock, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { API_BASE_URL } from "@/config/env";
+import { authStorage } from "@/lib/authStorage";
 import { useToast } from "@/hooks/use-toast";
 
 interface Dispute {
@@ -37,7 +38,7 @@ const statusConfig = {
 } as const;
 
 const AdminDisputes = () => {
-  const token = localStorage.getItem("nexa_auth_token");
+  const token = authStorage.getToken();
   const { toast } = useToast();
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [disputes, setDisputes] = useState<Dispute[]>([]);

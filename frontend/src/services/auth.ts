@@ -1,4 +1,5 @@
 import { apiClient, AuthTokens, TokenManager } from './api';
+import { authStorage } from '../lib/authStorage';
 import { UserRole, User } from '../types';
 
 // ============================= ERROR HANDLING TYPE =========================== ===
@@ -210,7 +211,7 @@ class AuthService {
   // User Management
   getUser(): User | null {
     try {
-      const stored = localStorage.getItem('nexa_user');
+      const stored = authStorage.getUser();
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -218,12 +219,12 @@ class AuthService {
   }
 
   setUser(user: User): void {
-    localStorage.setItem('nexa_user', JSON.stringify(user));
+    authStorage.setUser(JSON.stringify(user));
   }
 
   clearUserData(): void {
     TokenManager.setTokens(null);
-    localStorage.removeItem('nexa_user');
+    authStorage.removeUser();
   }
 
   // Auth State

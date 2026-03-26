@@ -6,6 +6,7 @@ import axios, {
 } from 'axios';
 import { toast } from '../hooks/use-toast';
 import { API_BASE_URL } from '../config/env';
+import { authStorage } from '../lib/authStorage';
 
 // Types
 export interface AuthTokens {
@@ -28,10 +29,6 @@ export interface ApiResponse<T = unknown> {
 }
 
 // Constants
-const TOKEN_STORAGE_KEY = 'nexa_auth_tokens';
-const LEGACY_TOKEN_STORAGE_KEY = 'nexa_auth_token';
-const USER_STORAGE_KEY = 'nexa_user';
-
 // Token Management
 class TokenManager {
   private static tokens: AuthTokens | null = null;
@@ -39,11 +36,11 @@ class TokenManager {
   static getTokens(): AuthTokens | null {
     if (!this.tokens) {
       try {
-        const stored = localStorage.getItem(TOKEN_STORAGE_KEY);
+        const stored = authStorage.getTokens();
         if (stored) {
           this.tokens = JSON.parse(stored);
         } else {
-          const legacyToken = localStorage.getItem(LEGACY_TOKEN_STORAGE_KEY);
+          const legacyToken = authStorage.getToken();
           this.tokens = legacyToken
             ? {
                 access_token: legacyToken,
@@ -63,18 +60,18 @@ class TokenManager {
   static setTokens(tokens: AuthTokens | null): void {
     this.tokens = tokens;
     if (tokens) {
-      localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tokens));
-      localStorage.setItem(LEGACY_TOKEN_STORAGE_KEY, tokens.access_token);
+      authStorage.setTokens(JSON.stringify(tokens));
+      authStorage.setToken(tokens.access_token);
     } else {
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-      localStorage.removeItem(LEGACY_TOKEN_STORAGE_KEY);
-      localStorage.removeItem(USER_STORAGE_KEY);
+      authStorage.removeTokens();
+      authStorage.removeToken();
+      authStorage.removeUser();
     }
   }
 
   static getAccessToken(): string | null {
     const tokens = this.getTokens();
-    return tokens?.access_token || localStorage.getItem(LEGACY_TOKEN_STORAGE_KEY);
+    return tokens?.access_token || authStorage.getToken();
   }
 
   static isTokenExpired(): boolean {

@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { API_BASE_URL } from "@/config/env";
+import { authStorage } from "@/lib/authStorage";
 import { UserCircle, Briefcase, MapPin, Award } from "lucide-react";
 
 interface ContractorProfileForm {
@@ -27,7 +28,7 @@ interface ContractorProfileForm {
 const ContractorProfilePage = () => {
   const { updateUser } = useAuth();
   const { toast } = useToast();
-  const token = localStorage.getItem("nexa_auth_token");
+  const token = authStorage.getToken();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<ContractorProfileForm>({

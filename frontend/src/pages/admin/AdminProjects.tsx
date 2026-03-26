@@ -3,6 +3,7 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { PageHeader, SearchFilter } from "@/pages/admin";
 import type { ProjectStatus } from "@/types";
 import { API_BASE_URL } from "@/config/env";
+import { authStorage } from "@/lib/authStorage";
 import axios from "axios";
 
 const STATUSES: ("ALL" | ProjectStatus)[] = ["ALL", "pending", "approved", "in_progress", "completed", "disputed", "cancelled"];
@@ -23,7 +24,7 @@ const AdminProjects = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const token = localStorage.getItem('nexa_auth_token');
+  const token = authStorage.getToken();
 
   useEffect(() => {
     const fetchProjects = async () => {

@@ -1,6 +1,5 @@
 import { API_BASE_URL } from "../config/env";
-
-const TOKEN_KEY = "nexa_auth_token";
+import { authStorage } from "../lib/authStorage";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -93,7 +92,7 @@ export interface WorkflowConversation {
   };
 }
 
-const getToken = () => localStorage.getItem(TOKEN_KEY);
+const getToken = () => authStorage.getToken();
 
 const getErrorMessage = (payload: unknown) => {
   if (!payload || typeof payload !== "object") {

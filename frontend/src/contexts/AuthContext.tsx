@@ -2,10 +2,8 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import type { User, UserRole } from '@/types';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config/env';
+import { authStorage } from '@/lib/authStorage';
 import { TokenManager } from '@/services/api';
-
-const TOKEN_KEY = 'nexa_auth_token';
-const USER_KEY = 'nexa_auth_user';
 
 interface AuthState {
   user: User | null;
@@ -30,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user: null,
     token: null,
     role: null,
-    isLoading: false,
+    isLoading: true,
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +36,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Initialize from localStorage
   useEffect(() => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    const userStr = localStorage.getItem(USER_KEY);
+    const token = authStorage.getToken();
+    const userStr = authStorage.getUser();
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr);
@@ -50,10 +48,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isLoading: false,
         });
       } catch {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
+        authStorage.removeToken();
+        authStorage.removeUser();
       }
     }
+
+    setState((current) => ({
+      ...current,
+      isLoading: false,
+    }));
   }, []);
 
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
@@ -82,9 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updated_at: data.user.updatedAt || now,
       };
 
-      // Store to localStorage
-      localStorage.setItem(TOKEN_KEY, data.token);
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
+      authStorage.setToken(data.token);
+      authStorage.setUser(JSON.stringify(user));
       TokenManager.setTokens({
         access_token: data.token,
         refresh_token: data.refreshToken || '',
@@ -138,9 +140,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           updated_at: data.user.updatedAt || now,
         };
 
-        // Store to localStorage
-        localStorage.setItem(TOKEN_KEY, data.token);
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
+        authStorage.setToken(data.token);
+        authStorage.setUser(JSON.stringify(user));
         TokenManager.setTokens({
           access_token: data.token,
           refresh_token: data.refreshToken || '',
@@ -168,8 +169,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    authStorage.removeToken();
+    authStorage.removeUser();
     TokenManager.setTokens(null);
     setState({
       user: null,
@@ -186,7 +187,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const nextUser = { ...current.user, ...updates };
-      localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
+      authStorage.setUser(JSON.stringify(nextUser));
 
       return {
         ...current,

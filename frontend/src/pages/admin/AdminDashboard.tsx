@@ -6,6 +6,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { PageHeader, StatCard } from "@/pages/admin";
 import { API_BASE_URL } from "@/config/env";
+import { authStorage } from "@/lib/authStorage";
 import axios from "axios";
 
 interface DashboardAnalytics {
@@ -49,7 +50,7 @@ const AdminDashboard = () => {
   const [recentProjects, setRecentProjects] = useState<DashboardProject[]>([]);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
 
-  const token = localStorage.getItem("nexa_auth_token");
+  const token = authStorage.getToken();
 
   useEffect(() => {
     const fetchData = async () => {

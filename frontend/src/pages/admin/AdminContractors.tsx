@@ -4,6 +4,7 @@ import { CheckCircle, Star } from "lucide-react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { API_BASE_URL } from "@/config/env";
+import { authStorage } from "@/lib/authStorage";
 import axios from "axios";
 
 interface Contractor {
@@ -25,7 +26,7 @@ const AdminContractors = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
-  const token = localStorage.getItem('nexa_auth_token');
+  const token = authStorage.getToken();
 
   useEffect(() => {
     const fetchContractors = async () => {
