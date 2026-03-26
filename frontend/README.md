@@ -60,9 +60,40 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+## Deployment
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Vercel
+
+1. Import the `frontend` folder as a project.
+2. Framework preset: `Vite`
+3. Build command: `npm run build`
+4. Output directory: `dist`
+5. Add environment variable:
+
+```sh
+VITE_API_BASE_URL=https://your-backend-domain/api
+```
+
+The repo already includes [vercel.json](./vercel.json) for SPA route rewrites.
+
+### Netlify
+
+1. Base directory: `frontend`
+2. Build command: `npm run build`
+3. Publish directory: `dist`
+4. Add environment variable:
+
+```sh
+VITE_API_BASE_URL=https://your-backend-domain/api
+```
+
+The repo already includes [public/_redirects](./public/_redirects) so React Router routes work after refresh.
+
+### Important
+
+- Do not deploy with localhost values in `.env`
+- Use a real backend URL for `VITE_API_BASE_URL`
+- Rotate any exposed keys before going live
 
 ## Can I connect a custom domain to my Lovable project?
 
