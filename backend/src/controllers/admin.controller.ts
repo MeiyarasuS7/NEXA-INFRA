@@ -424,7 +424,7 @@ export const getPayments = catchAsync(
     }
 
     const payments = await Payment.find(query)
-      .populate('projectId', 'title')
+      .populate('projectId', 'title approvalStatus status')
       .populate('userId', 'name email')
       .populate('contractorId', 'company')
       .sort({ createdAt: -1 })

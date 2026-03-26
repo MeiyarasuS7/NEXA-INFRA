@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { PageHeader, StatCard } from "@/pages/admin";
 import { DollarSign, CheckCircle, Clock, AlertTriangle, XCircle } from "lucide-react";
-import { apiClient } from "@/services/api";
+import { paymentService } from "@/services/payment";
 import { useToast } from "@/hooks/use-toast";
 
 interface Payment {
@@ -20,9 +21,17 @@ interface Payment {
     company?: string;
   };
   amount: number;
-  status: "pending" | "processing" | "completed" | "failed" | "refunded" | "disputed";
-  paymentMethod: "card" | "bank_transfer" | "wallet" | "stripe";
+  status: "pending" | "verification_pending" | "rejected" | "processing" | "completed" | "failed" | "refunded" | "disputed";
+  paymentMethod: "card" | "bank_transfer" | "wallet" | "stripe" | "check" | "cash" | "other";
   refundReason?: string;
+  offlineVerification?: {
+    referenceNumber?: string;
+    notes?: string;
+    proofUrl?: string;
+    submittedAt?: string;
+    verificationNotes?: string;
+    rejectionReason?: string;
+  } | null;
   createdAt: string;
 }
 
@@ -31,12 +40,13 @@ const AdminPayments = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [verificationNotes, setVerificationNotes] = useState<Record<string, string>>({});
 
   const loadPayments = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get<{ payments: Payment[] }>("/admin/payments");
-      setPayments(Array.isArray(data.payments) ? data.payments : []);
+      const data = await paymentService.getAllPayments();
+      setPayments(data as Payment[]);
     } catch (requestError) {
       toast({
         title: "Unable to load payments",
@@ -62,6 +72,27 @@ const AdminPayments = () => {
 
     return { total, completed, pending, disputed };
   }, [payments]);
+
+  const verifyOfflinePayment = async (paymentId: string, approved: boolean) => {
+    try {
+      setProcessingId(paymentId);
+      await paymentService.verifyOfflinePayment(paymentId, approved, verificationNotes[paymentId]?.trim());
+      await loadPayments();
+      setVerificationNotes((current) => ({ ...current, [paymentId]: "" }));
+      toast({
+        title: approved ? "Offline payment approved" : "Offline payment rejected",
+        description: "The payment record has been updated.",
+      });
+    } catch (requestError) {
+      toast({
+        title: "Unable to verify offline payment",
+        description: requestError instanceof Error ? requestError.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   const processRefund = async (paymentId: string, approved: boolean) => {
     try {
@@ -132,10 +163,50 @@ const AdminPayments = () => {
                       </TableCell>
                       <TableCell className="text-muted-foreground">{payment.contractorId?.company || "Unassigned"}</TableCell>
                       <TableCell className="font-medium text-foreground">${payment.amount.toLocaleString()}</TableCell>
-                      <TableCell><StatusBadge status={payment.status} /></TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <StatusBadge status={payment.status} />
+                          <p className="text-xs text-muted-foreground capitalize">{payment.paymentMethod.replace("_", " ")}</p>
+                        </div>
+                      </TableCell>
                       <TableCell className="text-muted-foreground text-sm">{new Date(payment.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
-                        {hasRefundRequest ? (
+                        {payment.status === "verification_pending" ? (
+                          <div className="ml-auto max-w-xs space-y-2">
+                            <div className="rounded-md border border-border bg-muted/40 p-2 text-left text-xs text-muted-foreground">
+                              <p><span className="font-medium text-foreground">Ref:</span> {payment.offlineVerification?.referenceNumber || "Not provided"}</p>
+                              {payment.offlineVerification?.notes && <p className="mt-1">{payment.offlineVerification.notes}</p>}
+                            </div>
+                            <Textarea
+                              rows={2}
+                              placeholder="Add approval note or rejection reason"
+                              value={verificationNotes[payment._id] || ""}
+                              onChange={(event) =>
+                                setVerificationNotes((current) => ({ ...current, [payment._id]: event.target.value }))
+                              }
+                            />
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-success border-success/30"
+                                disabled={processingId === payment._id}
+                                onClick={() => void verifyOfflinePayment(payment._id, true)}
+                              >
+                                <CheckCircle className="mr-1 h-3.5 w-3.5" /> Approve Payment
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-destructive border-destructive/30"
+                                disabled={processingId === payment._id}
+                                onClick={() => void verifyOfflinePayment(payment._id, false)}
+                              >
+                                <XCircle className="mr-1 h-3.5 w-3.5" /> Reject Payment
+                              </Button>
+                            </div>
+                          </div>
+                        ) : hasRefundRequest ? (
                           <div className="flex justify-end gap-2">
                             <Button
                               size="sm"
@@ -158,7 +229,11 @@ const AdminPayments = () => {
                           </div>
                         ) : (
                           <span className="text-xs text-muted-foreground">
-                            {payment.refundReason ? "Refund already handled" : "No admin action required"}
+                            {payment.offlineVerification?.rejectionReason
+                              ? `Rejected: ${payment.offlineVerification.rejectionReason}`
+                              : payment.refundReason
+                                ? "Refund already handled"
+                                : "No admin action required"}
                           </span>
                         )}
                       </TableCell>

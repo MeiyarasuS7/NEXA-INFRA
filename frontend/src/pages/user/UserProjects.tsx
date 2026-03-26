@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Textarea } from "@/components/ui/textarea";
 import { workflowApi, type WorkflowProject } from "@/services/workflowApi";
+import { paymentService } from "@/services/payment";
 
 const FILTERS = ["ALL", "pending", "approved", "in_progress", "completed", "cancelled", "disputed"] as const;
 
@@ -26,6 +32,14 @@ const UserProjects = () => {
   const [projects, setProjects] = useState<WorkflowProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [paymentForm, setPaymentForm] = useState<Record<string, {
+    paymentMethod: "bank_transfer" | "check" | "cash" | "other";
+    referenceNumber: string;
+    paidAt: string;
+    notes: string;
+    proofUrl: string;
+  }>>({});
+  const [submittingPaymentId, setSubmittingPaymentId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -47,6 +61,67 @@ const UserProjects = () => {
     () => projects.filter((project) => filter === "ALL" || project.status === filter),
     [filter, projects]
   );
+
+  const updatePaymentForm = (
+    projectId: string,
+    updates: Partial<{
+      paymentMethod: "bank_transfer" | "check" | "cash" | "other";
+      referenceNumber: string;
+      paidAt: string;
+      notes: string;
+      proofUrl: string;
+    }>
+  ) => {
+    setPaymentForm((current) => ({
+      ...current,
+      [projectId]: {
+        paymentMethod: "bank_transfer",
+        referenceNumber: "",
+        paidAt: new Date().toISOString().slice(0, 16),
+        notes: "",
+        proofUrl: "",
+        ...current[projectId],
+        ...updates,
+      },
+    }));
+  };
+
+  const submitOfflinePayment = async (project: WorkflowProject) => {
+    const form = paymentForm[project._id] || {
+      paymentMethod: "bank_transfer" as const,
+      referenceNumber: "",
+      paidAt: new Date().toISOString().slice(0, 16),
+      notes: "",
+      proofUrl: "",
+    };
+
+    if (!form.referenceNumber.trim()) {
+      setError("Please enter the payment reference number.");
+      return;
+    }
+
+    try {
+      setSubmittingPaymentId(project._id);
+      setError(null);
+      const payment = await paymentService.submitOfflinePayment({
+        projectId: project._id,
+        amount: project.budget,
+        paymentMethod: form.paymentMethod,
+        referenceNumber: form.referenceNumber.trim(),
+        paidAt: form.paidAt,
+        notes: form.notes.trim() || undefined,
+        proofUrl: form.proofUrl.trim() || undefined,
+      });
+
+      setProjects((current) =>
+        current.map((item) => (item._id === project._id ? { ...item, payment } : item))
+      );
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Failed to submit offline payment");
+    } finally {
+      setSubmittingPaymentId(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -102,6 +177,101 @@ const UserProjects = () => {
                   <span className="text-muted-foreground">Contractor:</span>{" "}
                   {project.contractorId?.company || project.contractorId?.userId?.name || "Waiting for admin mapping"}
                 </p>
+              </div>
+
+              <div className="mt-4 rounded-lg border border-border bg-muted/20 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Payment</p>
+                    <p className="text-xs text-muted-foreground">
+                      Submit your offline payment details so admin can verify them before approving this request.
+                    </p>
+                  </div>
+                  {project.payment ? <StatusBadge status={project.payment.status} /> : <StatusBadge status="pending" label="Not Submitted" />}
+                </div>
+
+                {project.payment && (
+                  <div className="mt-3 space-y-2 text-sm">
+                    <p><span className="text-muted-foreground">Method:</span> {project.payment.paymentMethod.replace("_", " ")}</p>
+                    <p><span className="text-muted-foreground">Amount:</span> {currency(project.payment.amount)}</p>
+                    <p><span className="text-muted-foreground">Reference:</span> {project.payment.offlineVerification?.referenceNumber || "Not provided"}</p>
+                    {project.payment.offlineVerification?.verificationNotes && (
+                      <p><span className="text-muted-foreground">Admin Notes:</span> {project.payment.offlineVerification.verificationNotes}</p>
+                    )}
+                    {project.payment.offlineVerification?.rejectionReason && (
+                      <p className="text-destructive"><span className="text-muted-foreground">Rejection:</span> {project.payment.offlineVerification.rejectionReason}</p>
+                    )}
+                  </div>
+                )}
+
+                {project.payment?.status !== "completed" && project.approvalStatus === "pending" && (
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label>Offline Payment Method</Label>
+                      <Select
+                        value={paymentForm[project._id]?.paymentMethod || "bank_transfer"}
+                        onValueChange={(value: "bank_transfer" | "check" | "cash" | "other") =>
+                          updatePaymentForm(project._id, { paymentMethod: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select payment method" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                          <SelectItem value="check">Check</SelectItem>
+                          <SelectItem value="cash">Cash</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Reference Number</Label>
+                      <Input
+                        value={paymentForm[project._id]?.referenceNumber || ""}
+                        onChange={(event) => updatePaymentForm(project._id, { referenceNumber: event.target.value })}
+                        placeholder="UTR / cheque no / receipt no"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Paid At</Label>
+                      <Input
+                        type="datetime-local"
+                        value={paymentForm[project._id]?.paidAt || new Date().toISOString().slice(0, 16)}
+                        onChange={(event) => updatePaymentForm(project._id, { paidAt: event.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Proof URL (optional)</Label>
+                      <Input
+                        value={paymentForm[project._id]?.proofUrl || ""}
+                        onChange={(event) => updatePaymentForm(project._id, { proofUrl: event.target.value })}
+                        placeholder="Drive link / receipt image link"
+                      />
+                    </div>
+                    <div className="space-y-1.5 md:col-span-2">
+                      <Label>Notes</Label>
+                      <Textarea
+                        rows={3}
+                        value={paymentForm[project._id]?.notes || ""}
+                        onChange={(event) => updatePaymentForm(project._id, { notes: event.target.value })}
+                        placeholder="Add transfer details or anything admin should verify"
+                      />
+                    </div>
+                    <div className="md:col-span-2 flex justify-end">
+                      <Button
+                        onClick={() => void submitOfflinePayment(project)}
+                        disabled={submittingPaymentId === project._id}
+                      >
+                        {submittingPaymentId === project._id
+                          ? "Submitting..."
+                          : project.payment?.status === "rejected"
+                            ? "Resubmit Payment Proof"
+                            : "Submit Offline Payment"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {project.approvalStatus === "rejected" && project.rejectionReason && (

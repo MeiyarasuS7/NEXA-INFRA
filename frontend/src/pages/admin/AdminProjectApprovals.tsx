@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertCircle, Check, CheckCircle, Loader, RefreshCw, X } from "lucide-react";
 import { PageHeader } from "@/pages/admin";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { workflowApi, type WorkflowContractorSummary, type WorkflowProject } from "@/services/workflowApi";
 
@@ -55,9 +56,15 @@ const AdminProjectApprovals = () => {
 
   const handleApprove = async (projectId: string) => {
     const contractorId = selectedContractors[projectId];
+    const project = projects.find((item) => item._id === projectId);
 
     if (!contractorId) {
       setError("Select a contractor before approving the request.");
+      return;
+    }
+
+    if (project?.payment?.status !== "completed") {
+      setError("A verified payment is required before approval.");
       return;
     }
 
@@ -156,6 +163,31 @@ const AdminProjectApprovals = () => {
                     <p className="font-medium text-foreground">{project.userId.name}</p>
                     <p className="text-xs text-muted-foreground">{project.userId.email}</p>
                   </div>
+
+                  <div className="rounded-lg border border-border bg-muted/30 p-3">
+                    <p className="text-xs font-medium text-muted-foreground">Payment</p>
+                    {project.payment ? (
+                      <div className="mt-2 space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <StatusBadge status={project.payment.status} />
+                          <span className="text-muted-foreground capitalize">{project.payment.paymentMethod.replace("_", " ")}</span>
+                        </div>
+                        <p className="font-medium text-foreground">{formatCurrency(project.payment.amount)}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Reference: {project.payment.offlineVerification?.referenceNumber || "Not provided"}
+                        </p>
+                        {project.payment.offlineVerification?.rejectionReason && (
+                          <p className="text-xs text-destructive">
+                            Rejected: {project.payment.offlineVerification.rejectionReason}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Client has not submitted payment proof yet.
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-3">
@@ -185,10 +217,18 @@ const AdminProjectApprovals = () => {
                       size="sm"
                       className="w-full gap-2 bg-green-600 hover:bg-green-700"
                       onClick={() => void handleApprove(project._id)}
-                      disabled={actingOnProjectId === project._id || contractorOptions.length === 0}
+                      disabled={
+                        actingOnProjectId === project._id ||
+                        contractorOptions.length === 0 ||
+                        project.payment?.status !== "completed"
+                      }
                     >
                       <Check className="h-4 w-4" />
-                      {actingOnProjectId === project._id ? "Approving..." : "Approve And Assign"}
+                      {actingOnProjectId === project._id
+                        ? "Approving..."
+                        : project.payment?.status === "completed"
+                          ? "Approve And Assign"
+                          : "Waiting For Verified Payment"}
                     </Button>
                   </div>
 

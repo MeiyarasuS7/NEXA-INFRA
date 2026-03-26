@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Project, { ProjectStatus } from '../models/Project';
+import Payment from '../models/Payment';
 import Conversation from '../models/Conversation';
 import Contractor from '../models/Contractor';
 import UserContractorMapping from '../models/UserContractorMapping';
@@ -9,6 +10,52 @@ import mongoose from 'mongoose';
 const getContractorProfileIdForUser = async (userId: string) => {
   const contractor = await Contractor.findOne({ userId }).select('_id');
   return contractor?._id || null;
+};
+
+const attachLatestPaymentSummaries = async (projects: any[]) => {
+  if (projects.length === 0) {
+    return projects;
+  }
+
+  const projectIds = projects.map((project) => project._id);
+  const payments = await Payment.find({ projectId: { $in: projectIds } })
+    .sort({ createdAt: -1 })
+    .select('projectId amount status paymentMethod createdAt paidAt offlineVerification');
+
+  const paymentByProject = new Map<string, any>();
+  payments.forEach((payment) => {
+    const key = payment.projectId.toString();
+    if (!paymentByProject.has(key)) {
+      paymentByProject.set(key, {
+        _id: payment._id,
+        amount: payment.amount,
+        status: payment.status,
+        paymentMethod: payment.paymentMethod,
+        createdAt: payment.createdAt,
+        paidAt: payment.paidAt,
+        offlineVerification: payment.offlineVerification
+          ? {
+              referenceNumber: payment.offlineVerification.referenceNumber,
+              notes: payment.offlineVerification.notes,
+              proofUrl: payment.offlineVerification.proofUrl,
+              submittedAt: payment.offlineVerification.submittedAt,
+              paidAt: payment.offlineVerification.paidAt,
+              verificationNotes: payment.offlineVerification.verificationNotes,
+              rejectionReason: payment.offlineVerification.rejectionReason,
+              verifiedAt: payment.offlineVerification.verifiedAt,
+            }
+          : null,
+      });
+    }
+  });
+
+  return projects.map((project) => {
+    const value = typeof project.toObject === 'function' ? project.toObject() : project;
+    return {
+      ...value,
+      payment: paymentByProject.get(project._id.toString()) || null,
+    };
+  });
 };
 
 const getAllowedStatusTransitions = (
@@ -138,11 +185,13 @@ export const getProjects = catchAsync(
       .populate('contractorId', 'company specialties rating')
       .sort({ createdAt: -1 });
 
+    const projectsWithPayments = await attachLatestPaymentSummaries(projects);
+
     res.status(200).json({
       success: true,
       data: {
-        projects,
-        count: projects.length,
+        projects: projectsWithPayments,
+        count: projectsWithPayments.length,
       },
     });
   }
@@ -578,6 +627,15 @@ export const approveProject = catchAsync(
       return next(new AppError('This project has already been reviewed', 400));
     }
 
+    const verifiedPayment = await Payment.findOne({
+      projectId: project._id,
+      status: 'completed',
+    });
+
+    if (!verifiedPayment) {
+      return next(new AppError('A verified payment is required before approving this project', 400));
+    }
+
     const contractor = await Contractor.findById(contractorId).select('_id userId company specialties');
 
     if (!contractor) {
@@ -590,6 +648,15 @@ export const approveProject = catchAsync(
     project.approvedAt = new Date();
     project.contractorId = contractor._id;
     project.status = 'approved';
+
+    await Payment.updateMany(
+      { projectId: project._id },
+      {
+        $set: {
+          contractorId: contractor._id,
+        },
+      }
+    );
 
     await UserContractorMapping.findOneAndUpdate(
       {
@@ -729,10 +796,12 @@ export const getPendingProjects = catchAsync(
       .populate('userId', 'name email phone location')
       .sort({ createdAt: -1 });
 
+    const projectsWithPayments = await attachLatestPaymentSummaries(projects);
+
     res.status(200).json({
       success: true,
       message: 'Pending projects retrieved successfully',
-      data: { projects, total: projects.length },
+      data: { projects: projectsWithPayments, total: projectsWithPayments.length },
     });
   }
 );

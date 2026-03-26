@@ -45,6 +45,26 @@ export interface WorkflowProject {
   userId: WorkflowUserSummary;
   contractorId?: WorkflowContractorSummary | null;
   conversationId?: string | null;
+  payment?: WorkflowPaymentSummary | null;
+}
+
+export interface WorkflowPaymentSummary {
+  _id: string;
+  amount: number;
+  status: "pending" | "verification_pending" | "rejected" | "processing" | "completed" | "failed" | "refunded" | "disputed";
+  paymentMethod: "card" | "bank_transfer" | "wallet" | "stripe" | "check" | "cash" | "other";
+  createdAt: string;
+  paidAt?: string | null;
+  offlineVerification?: {
+    referenceNumber?: string;
+    notes?: string;
+    proofUrl?: string;
+    submittedAt?: string;
+    paidAt?: string;
+    verificationNotes?: string;
+    rejectionReason?: string;
+    verifiedAt?: string;
+  } | null;
 }
 
 export interface WorkflowConversationMessage {

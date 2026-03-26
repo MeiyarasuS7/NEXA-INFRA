@@ -2,19 +2,33 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export type PaymentStatus = 
   | 'pending'
+  | 'verification_pending'
+  | 'rejected'
   | 'processing'
   | 'completed'
   | 'failed'
   | 'refunded'
   | 'disputed';
 
-export type PaymentMethod = 'card' | 'bank_transfer' | 'wallet' | 'stripe';
+export type PaymentMethod = 'card' | 'bank_transfer' | 'wallet' | 'stripe' | 'check' | 'cash' | 'other';
+
+export interface IOfflineVerification {
+  referenceNumber: string;
+  notes?: string;
+  proofUrl?: string;
+  submittedAt: Date;
+  paidAt?: Date;
+  verifiedBy?: mongoose.Types.ObjectId;
+  verifiedAt?: Date;
+  verificationNotes?: string;
+  rejectionReason?: string;
+}
 
 export interface IPayment extends Document {
   _id: mongoose.Types.ObjectId;
   projectId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
-  contractorId: mongoose.Types.ObjectId;
+  contractorId?: mongoose.Types.ObjectId | null;
   amount: number;
   currency: string;
   status: PaymentStatus;
@@ -27,6 +41,7 @@ export interface IPayment extends Document {
     phase?: string;
     notes?: string;
   };
+  offlineVerification?: IOfflineVerification | null;
   paidAt?: Date;
   refundedAt?: Date;
   refundAmount?: number;
@@ -54,7 +69,7 @@ const paymentSchema = new Schema<IPayment>(
     contractorId: {
       type: Schema.Types.ObjectId,
       ref: 'Contractor',
-      required: [true, 'Contractor ID is required'],
+      default: null,
     },
     amount: {
       type: Number,
@@ -68,12 +83,12 @@ const paymentSchema = new Schema<IPayment>(
     },
     status: {
       type: String,
-      enum: ['pending', 'processing', 'completed', 'failed', 'refunded', 'disputed'],
+      enum: ['pending', 'verification_pending', 'rejected', 'processing', 'completed', 'failed', 'refunded', 'disputed'],
       default: 'pending',
     },
     paymentMethod: {
       type: String,
-      enum: ['card', 'bank_transfer', 'wallet', 'stripe'],
+      enum: ['card', 'bank_transfer', 'wallet', 'stripe', 'check', 'cash', 'other'],
       required: [true, 'Payment method is required'],
     },
     stripePaymentIntentId: {
@@ -93,6 +108,21 @@ const paymentSchema = new Schema<IPayment>(
       milestone: { type: String },
       phase: { type: String },
       notes: { type: String },
+    },
+    offlineVerification: {
+      referenceNumber: { type: String, trim: true },
+      notes: { type: String, trim: true },
+      proofUrl: { type: String, trim: true },
+      submittedAt: { type: Date },
+      paidAt: { type: Date },
+      verifiedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        default: null,
+      },
+      verifiedAt: { type: Date, default: null },
+      verificationNotes: { type: String, trim: true },
+      rejectionReason: { type: String, trim: true },
     },
     paidAt: {
       type: Date,
