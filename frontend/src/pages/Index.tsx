@@ -59,9 +59,9 @@ const TESTIMONIALS = [
 ];
 
 const ABOUT_PILLARS = [
-  { icon: MapPin,    title: "Built for You",        desc: "Designed around the realities of the local construction market â€” local pricing, local professionals, local trust." },
+  { icon: MapPin,    title: "Built for You",        desc: "Designed around the realities of the local construction market: local pricing, local professionals, and local trust." },
   { icon: Handshake, title: "Fair for Both Sides",    desc: "Homeowners get protection. Contractors get fair pay. Our platform is built to create lasting professional relationships." },
-  { icon: Clock,     title: "Saving You Time",        desc: "From browsing to project completion â€” everything in one platform so you never chase emails or phone calls again." },
+  { icon: Clock,     title: "Saving You Time",        desc: "From browsing to project completion, everything stays in one platform so you never chase emails or phone calls again." },
 ];
 
 // â”€â”€ Scroll-reveal hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -150,8 +150,8 @@ const Index = () => {
 
             <div className="hero-animate" style={{ animationDelay: "0.4s" }}>
               <p className="max-w-lg text-lg leading-relaxed text-primary-foreground/75">
-                Connect with vetted construction professionals. Transparent pricing,
-                real-time milestones, and escrow-protected payments â€” all in one place.
+                Connect with trusted construction professionals. Get clear pricing,
+                live project tracking, and secure payments in one platform.
               </p>
             </div>
 
@@ -172,7 +172,7 @@ const Index = () => {
                   </div>
                 ))}
               </div>
-              <span><strong className="text-primary-foreground">4.8â˜…</strong> rated by 3,200+ verified homeowners</span>
+              <span><strong className="text-primary-foreground">4.8/5</strong> rated by 3,200+ verified homeowners</span>
             </div>
           </div>
         </div>
@@ -203,7 +203,7 @@ const Index = () => {
             </h2>
             <p className="mt-4 text-muted-foreground text-base leading-relaxed max-w-2xl mx-auto">
               NEXA INFRA was founded with one mission: make construction projects simple, transparent, and safe for everyone.
-              We connect homeowners and property developers with skilled, verified contractors â€” backed by smart technology
+              We connect homeowners and property developers with skilled, verified contractors backed by smart technology
               and real accountability.
             </p>
           </div>
@@ -231,7 +231,7 @@ const Index = () => {
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Every contractor on our platform is verified, rated, and held accountable. Every payment is protected by escrow.
-                Every milestone is tracked in real time â€” so you're always in control.
+                Every milestone is tracked in real time, so you're always in control.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
                 <Button onClick={() => navigate("/register")} className="gap-2">
@@ -291,7 +291,7 @@ const Index = () => {
             <Badge variant="outline" className="mb-3 border-secondary/40 text-secondary font-semibold">How It Works</Badge>
             <h2 className="font-heading text-3xl font-bold text-foreground lg:text-4xl">Three steps to your ideal project</h2>
             <p className="mt-3 text-muted-foreground text-base">
-              From finding the right contractor to approving the finished work â€” simple and straightforward.
+              From finding the right contractor to approving the finished work, everything stays simple and straightforward.
             </p>
           </div>
 
