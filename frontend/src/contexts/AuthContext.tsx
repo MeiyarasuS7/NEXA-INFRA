@@ -14,7 +14,13 @@ interface AuthState {
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    role: UserRole,
+    specialties?: string[]
+  ) => Promise<boolean>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   error: string | null;
@@ -112,7 +118,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const register = useCallback(
-    async (name: string, email: string, password: string, role: UserRole): Promise<boolean> => {
+    async (
+      name: string,
+      email: string,
+      password: string,
+      role: UserRole,
+      specialties: string[] = []
+    ): Promise<boolean> => {
       setState(s => ({ ...s, isLoading: true }));
       setError(null);
 
@@ -123,6 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email,
           password,
           role: role.toLowerCase(),
+          ...(role === 'contractor' ? { specialties } : {}),
         });
 
         const { data } = response.data;

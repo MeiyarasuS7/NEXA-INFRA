@@ -23,7 +23,7 @@ const getUserStats = (role: string | null) => {
         totalContractors: 2547,
         activeProjects: 342,
         pendingApprovals: 12,
-        monthlyRevenue: '$1.2M',
+        monthlyRevenue: 'Rs 12L',
         disputes: 7,
         completionRate: '94%',
       };
@@ -32,7 +32,7 @@ const getUserStats = (role: string | null) => {
         activeProjects: 3,
         completedProjects: 89,
         rating: 4.8,
-        totalEarnings: '$245K',
+        totalEarnings: 'Rs 2.45L',
         pendingReviews: 2,
       };
     case 'USER':

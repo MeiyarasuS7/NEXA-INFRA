@@ -8,6 +8,7 @@ import { PageHeader, StatCard } from "@/pages/admin";
 import { API_BASE_URL } from "@/config/env";
 import { authStorage } from "@/lib/authStorage";
 import axios from "axios";
+import { formatInrCompact } from "@/lib/currency";
 
 interface DashboardAnalytics {
   users?: { contractors?: number };
@@ -157,7 +158,7 @@ const AdminDashboard = () => {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard title="Total Contractors" value={analytics?.users?.contractors || 0} icon={Users} trend={{ value: 12, positive: true }} />
         <StatCard title="Active Projects" value={analytics?.projects?.total || 0} icon={FolderKanban} trend={{ value: 8, positive: true }} />
-        <StatCard title="Revenue (MTD)" value={`$${(analytics?.payments?.totalRevenue || 0) / 1000}K`} icon={DollarSign} trend={{ value: 15, positive: true }} />
+        <StatCard title="Revenue (MTD)" value={formatInrCompact(analytics?.payments?.totalRevenue || 0)} icon={DollarSign} trend={{ value: 15, positive: true }} />
         <StatCard title="Open Disputes" value={analytics?.disputes?.open || 0} icon={TrendingUp} trend={{ value: 2, positive: false }} />
       </div>
 

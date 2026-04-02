@@ -2,20 +2,16 @@
 
 import type { ProjectStatus, ContractorStatus } from "@/types";
 import { STATUS_COLORS, PRIORITY_LEVELS } from "../constants";
+import { formatInr, formatInrNumber } from "@/lib/currency";
 
 // Format Currency
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return formatInr(amount);
 };
 
 // Format Number with Commas
 export const formatNumber = (num: number): string => {
-  return new Intl.NumberFormat("en-US").format(num);
+  return formatInrNumber(num);
 };
 
 // Format Percentage

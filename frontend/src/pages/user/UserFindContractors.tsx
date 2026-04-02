@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Star, MapPin, Briefcase, CheckCircle } from "lucide-react";
 import { apiClient } from "@/services/api";
+import { formatInr } from "@/lib/currency";
 
 interface ApiContractor {
   _id: string;
@@ -187,7 +188,7 @@ const UserFindContractors = () => {
                   {typeof contractor.hourlyRate === "number" && (
                     <div className="text-center">
                       <p className="text-sm text-muted-foreground">Hourly Rate</p>
-                      <p className="text-lg font-bold text-foreground">${contractor.hourlyRate}/hr</p>
+                      <p className="text-lg font-bold text-foreground">{formatInr(contractor.hourlyRate)}/hr</p>
                     </div>
                   )}
 

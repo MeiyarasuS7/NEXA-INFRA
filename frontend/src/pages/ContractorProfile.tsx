@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Star, MapPin, Clock, CheckCircle, ArrowLeft, Award } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiClient } from "@/services/api";
+import { formatInr } from "@/lib/currency";
 
 interface ApiContractor {
   _id: string;
@@ -178,7 +179,7 @@ const ContractorProfile = () => {
             </div>
             <div className="text-center lg:text-right">
               {typeof contractor.hourlyRate === "number" && (
-                <p className="font-heading text-2xl font-bold text-foreground">${contractor.hourlyRate}<span className="text-sm font-normal text-muted-foreground">/hr</span></p>
+                <p className="font-heading text-2xl font-bold text-foreground">{formatInr(contractor.hourlyRate)}<span className="text-sm font-normal text-muted-foreground">/hr</span></p>
               )}
               <p className="text-sm text-muted-foreground">{contractor.totalProjects || 0} projects completed</p>
               <Button

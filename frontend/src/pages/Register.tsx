@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { HardHat, User, Mail, Lock, AlertCircle } from "lucide-react";
 import type { UserRole } from "@/types";
 
@@ -12,6 +13,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [specialties, setSpecialties] = useState("");
   const [role, setRole] = useState<UserRole>("user");
   const { register, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
@@ -19,8 +21,13 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
-    
-    const success = await register(name, email, password, role);
+
+    const parsedSpecialties = specialties
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    const success = await register(name, email, password, role, parsedSpecialties);
     if (!success) return;
     
     navigate(role === "contractor" ? "/contractor/dashboard" : "/user/dashboard");
@@ -78,6 +85,22 @@ const Register = () => {
                 <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" required />
               </div>
             </div>
+            {role === "contractor" && (
+              <div>
+                <Label htmlFor="specialties">Specialties</Label>
+                <Textarea
+                  id="specialties"
+                  className="mt-1.5"
+                  placeholder="Masonry, Plumbing, Electrical"
+                  value={specialties}
+                  onChange={e => setSpecialties(e.target.value)}
+                  required
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Add at least one specialty, separated by commas.
+                </p>
+              </div>
+            )}
             <Button type="submit" className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90" disabled={isLoading}>
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>

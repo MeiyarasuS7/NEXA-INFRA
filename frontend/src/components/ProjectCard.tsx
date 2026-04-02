@@ -1,6 +1,7 @@
 import { StatusBadge } from "./StatusBadge";
 import { Calendar, DollarSign } from "lucide-react";
 import type { Project } from "@/types";
+import { formatInr } from "@/lib/currency";
 
 interface ProjectCardProps {
   project: Project;
@@ -46,7 +47,7 @@ export const ProjectCard = ({ project, showContractor = true }: ProjectCardProps
       <div className="mt-4 flex items-center gap-4 border-t border-border pt-3 text-sm text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <DollarSign className="h-3.5 w-3.5" />
-          ${project.budget.toLocaleString()}
+          {formatInr(project.budget)}
         </span>
         <span className="flex items-center gap-1.5">
           <Calendar className="h-3.5 w-3.5" />

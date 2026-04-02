@@ -34,7 +34,7 @@ const STATS = [
   { value: "2,500+", label: "Verified Contractors" },
   { value: "15K+",   label: "Projects Completed"   },
   { value: "4.8",    label: "Avg. Star Rating"      },
-  { value: "$50M+",  label: "Projects Managed"      },
+  { value: "Rs 50Cr+",  label: "Projects Managed"      },
 ];
 
 const FEATURES = [

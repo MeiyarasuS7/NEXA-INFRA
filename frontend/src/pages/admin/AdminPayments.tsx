@@ -7,6 +7,8 @@ import { PageHeader, StatCard } from "@/pages/admin";
 import { DollarSign, CheckCircle, Clock, AlertTriangle, XCircle } from "lucide-react";
 import { paymentService } from "@/services/payment";
 import { useToast } from "@/hooks/use-toast";
+import { apiClient } from "@/services/api";
+import { formatInr, formatInrCompact } from "@/lib/currency";
 
 interface Payment {
   _id: string;
@@ -125,7 +127,7 @@ const AdminPayments = () => {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Completed Revenue" value={`$${(stats.total / 1000).toFixed(1)}K`} icon={DollarSign} trend={{ value: 12, positive: true }} />
+        <StatCard title="Completed Revenue" value={formatInrCompact(stats.total)} icon={DollarSign} trend={{ value: 12, positive: true }} />
         <StatCard title="Completed" value={stats.completed} icon={CheckCircle} />
         <StatCard title="Pending" value={stats.pending} icon={Clock} />
         <StatCard title="Disputed" value={stats.disputed} icon={AlertTriangle} />
@@ -162,7 +164,7 @@ const AdminPayments = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-muted-foreground">{payment.contractorId?.company || "Unassigned"}</TableCell>
-                      <TableCell className="font-medium text-foreground">${payment.amount.toLocaleString()}</TableCell>
+                      <TableCell className="font-medium text-foreground">{formatInr(payment.amount)}</TableCell>
                       <TableCell>
                         <div className="space-y-1">
                           <StatusBadge status={payment.status} />

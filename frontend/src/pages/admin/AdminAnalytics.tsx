@@ -3,6 +3,7 @@ import { PageHeader, StatCard } from "@/pages/admin";
 import { Users, FolderKanban, DollarSign, Star, AlertTriangle } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { apiClient } from "@/services/api";
+import { formatInr, formatInrCompact } from "@/lib/currency";
 
 interface AnalyticsResponse {
   users?: {
@@ -90,7 +91,7 @@ const AdminAnalytics = () => {
         <StatCard title="Total Users" value={analytics?.users?.total || 0} icon={Users} />
         <StatCard title="Contractors" value={analytics?.users?.contractors || 0} icon={Users} />
         <StatCard title="Projects" value={analytics?.projects?.total || 0} icon={FolderKanban} />
-        <StatCard title="Revenue" value={`$${(((analytics?.payments?.totalRevenue || 0) as number) / 1000).toFixed(1)}K`} icon={DollarSign} />
+        <StatCard title="Revenue" value={formatInrCompact((analytics?.payments?.totalRevenue || 0) as number)} icon={DollarSign} />
         <StatCard title="Avg Rating" value={(analytics?.reviews?.averageRating || 0).toFixed(1)} icon={Star} />
       </div>
 
@@ -145,7 +146,7 @@ const AdminAnalytics = () => {
             <div className="space-y-3">
               {(analytics?.recentActivity?.payments || []).map((payment) => (
                 <div key={payment._id} className="rounded-lg border border-border p-3">
-                  <p className="font-medium text-foreground">${payment.amount.toLocaleString()}</p>
+                  <p className="font-medium text-foreground">{formatInr(payment.amount)}</p>
                   <p className="text-xs capitalize text-muted-foreground">{payment.status}</p>
                 </div>
               ))}

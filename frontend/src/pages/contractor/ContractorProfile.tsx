@@ -222,7 +222,7 @@ const ContractorProfilePage = () => {
           <>
             <div className="grid gap-4 sm:grid-cols-2">
               {renderInput("Business Name", "company")}
-              {renderInput("Hourly Rate ($)", "hourlyRate", { type: "number" })}
+              {renderInput("Hourly Rate (Rs)", "hourlyRate", { type: "number" })}
             </div>
             <div className="space-y-1.5">
               <Label>Bio</Label>

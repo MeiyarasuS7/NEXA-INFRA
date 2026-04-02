@@ -1,5 +1,6 @@
 import { apiClient } from './api';
 import { Project, ProjectStatus, ProjectRequest, Milestone, ProjectImage, ProjectDocument } from '../types';
+import { formatInr } from '../lib/currency';
 
 // ============================= PROJECT SERVICE =============================
 
@@ -424,10 +425,7 @@ class ProjectService {
 
   // Format project budget
   formatProjectBudget(budget: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(budget);
+    return formatInr(budget);
   }
 
   // Get milestone completion percentage

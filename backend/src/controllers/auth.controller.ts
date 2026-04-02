@@ -11,7 +11,7 @@ import { AppError, catchAsync } from '../middleware/error.middleware';
  */
 export const register = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { email, password, name, role, phone, location } = req.body;
+    const { email, password, name, role, phone, location, specialties } = req.body;
 
     // Validate required fields
     if (!email || !password || !name || !role) {
@@ -34,6 +34,14 @@ export const register = catchAsync(
       return next(new AppError('Invalid role', 400));
     }
 
+    const parsedSpecialties = Array.isArray(specialties)
+      ? specialties.map((value) => String(value).trim()).filter(Boolean)
+      : [];
+
+    if (role === 'contractor' && parsedSpecialties.length === 0) {
+      return next(new AppError('At least one specialty is required for contractor registration', 400));
+    }
+
     // Create user
     const user: IUser = await User.create({
       email: email.toLowerCase(),
@@ -49,7 +57,8 @@ export const register = catchAsync(
     if (role === 'contractor') {
       await Contractor.create({
         userId: user._id,
-        specialties: [],
+        company: name,
+        specialties: parsedSpecialties,
         experience: 0,
         rating: 0,
         totalProjects: 0,

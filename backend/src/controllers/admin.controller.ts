@@ -325,25 +325,47 @@ export const getContractors = catchAsync(
       query.specialties = specialty;
     }
 
-    if (search) {
-      query.$or = [
-        { company: { $regex: search, $options: 'i' } },
-        { bio: { $regex: search, $options: 'i' } },
-      ];
-    }
+    const normalizedSearch = typeof search === 'string' ? search.trim() : '';
 
     const contractors = await Contractor.find(query)
-      .populate('userId', 'name email phone')
+      .populate({
+        path: 'userId',
+        select: 'name email phone role',
+        match: { role: 'contractor' },
+      })
       .sort({ createdAt: -1 })
-      .limit(limit)
-      .skip((page - 1) * limit);
+      .lean();
 
-    const total = await Contractor.countDocuments(query);
+    const filteredContractors = contractors.filter((contractor: any) => {
+      if (!contractor.userId) {
+        return false;
+      }
+
+      if (!normalizedSearch) {
+        return true;
+      }
+
+      const term = normalizedSearch.toLowerCase();
+      const company = contractor.company?.toLowerCase?.() || '';
+      const bio = contractor.bio?.toLowerCase?.() || '';
+      const userName = contractor.userId.name?.toLowerCase?.() || '';
+      const userEmail = contractor.userId.email?.toLowerCase?.() || '';
+
+      return (
+        company.includes(term) ||
+        bio.includes(term) ||
+        userName.includes(term) ||
+        userEmail.includes(term)
+      );
+    });
+
+    const total = filteredContractors.length;
+    const paginatedContractors = filteredContractors.slice((page - 1) * limit, page * limit);
 
     res.status(200).json({
       success: true,
       data: {
-        contractors,
+        contractors: paginatedContractors,
         pagination: {
           page,
           limit,
