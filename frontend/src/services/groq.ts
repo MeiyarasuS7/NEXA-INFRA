@@ -170,7 +170,6 @@ class GroqService {
     if (!this.isConfigured()) {
       return "I'm currently in demo mode. Please configure the VITE_GROQ_API_KEY in your .env file to enable AI responses.";
     }
-
     try {
       const systemPrompt = this.getSystemPrompt(userContext || { user: null });
       
