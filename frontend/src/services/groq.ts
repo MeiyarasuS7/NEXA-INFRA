@@ -103,7 +103,6 @@ class GroqService {
         - Monthly Revenue: ${stats.monthlyRevenue || 'N/A'}
         - Active Disputes: ${stats.disputes || 'N/A'}
         ` : ''}
-        
         You can help the admin with:
         - Reviewing platform statistics and construction project metrics
         - Managing contractor approvals and certifications
