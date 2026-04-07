@@ -135,7 +135,6 @@ class GroqService {
         - Construction tools and equipment advice
         - Tracking construction milestones and deliverables
         - Construction industry regulations and standards
-        
         Provide practical construction advice and project management guidance.`;
         
       case 'USER':
