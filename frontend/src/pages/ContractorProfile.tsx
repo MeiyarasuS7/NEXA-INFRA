@@ -138,7 +138,6 @@ const ContractorProfile = () => {
         <Link to="/browse-contractors" className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back to contractors
         </Link>
-
         <div className="rounded-xl border border-border bg-card p-6 shadow-card lg:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-primary text-2xl font-bold text-primary-foreground">
@@ -160,13 +159,11 @@ const ContractorProfile = () => {
                 </span>
               </div>
               <p className="mt-4 text-muted-foreground">{contractor.bio || "No company bio available yet."}</p>
-
               <div className="mt-4 flex flex-wrap gap-2">
                 {(contractor.specialties || []).map((specialty) => (
                   <span key={specialty} className="rounded-lg bg-muted px-3 py-1 text-sm font-medium text-muted-foreground">{specialty}</span>
                 ))}
               </div>
-
               {contractor.certifications && contractor.certifications.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {contractor.certifications.map((certification) => (
