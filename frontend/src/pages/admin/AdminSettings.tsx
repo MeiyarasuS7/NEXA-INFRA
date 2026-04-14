@@ -6,6 +6,8 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Settings, Shield, Bell, DollarSign } from "lucide-react";
 
+// based on your admin access put the mail id in your env. 
+
 const AdminSettings = () => (
   <div className="space-y-6 max-w-3xl">
     <PageHeader
