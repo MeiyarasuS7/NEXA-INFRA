@@ -369,7 +369,7 @@ const AdminDisputes = () => {
         ) : (
           <div className="rounded-lg border border-dashed border-border p-12 text-center">
             <AlertTriangle className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-            <p className="text-lg font-medium text-foreground">No disputes found</p>
+            <p className="text-lg font-medium text-foreground">No Disputes Found</p>
             <p className="text-sm text-muted-foreground mt-1">
               All disputes with "{selectedFilter}" status are resolved
             </p>
