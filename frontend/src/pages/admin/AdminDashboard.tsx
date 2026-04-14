@@ -143,7 +143,7 @@ const AdminDashboard = () => {
         <div className="flex gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
           <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600" />
           <div>
-            <p className="font-medium text-red-900">Error loading dashboard</p>
+            <p className="font-medium text-red-900">Error loading on dashboard</p>
             <p className="text-sm text-red-700">{error}</p>
           </div>
         </div>
