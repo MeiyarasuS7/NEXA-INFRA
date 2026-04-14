@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { apiClient } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
+// based on the admin user you can put the mail id in the email
+
+
 interface AdminReview {
   _id: string;
   rating: number;
