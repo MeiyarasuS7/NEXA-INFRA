@@ -151,7 +151,7 @@ const AdminAnalytics = () => {
                 </div>
               ))}
               {(analytics?.recentActivity?.payments || []).length === 0 && (
-                <p className="text-sm text-muted-foreground">No recent payments.</p>
+                <p className="text-sm text-muted-foreground">No Recent Payments.</p>
               )}
             </div>
           </div>
@@ -162,7 +162,7 @@ const AdminAnalytics = () => {
         <div className="flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 text-warning" />
           <div>
-            <p className="font-medium text-foreground">Open disputes</p>
+            <p className="font-medium text-foreground">Open Disputes</p>
             <p className="text-sm text-muted-foreground">{analytics?.disputes?.open || 0} disputes currently need attention.</p>
           </div>
         </div>
