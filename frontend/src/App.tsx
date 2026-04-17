@@ -17,7 +17,15 @@ import NotFound from "./pages/NotFound";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
-
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminContractors from "./pages/admin/AdminContractors";
+import AdminProjects from "./pages/admin/AdminProjects";
+import AdminProjectApprovals from "./pages/admin/AdminProjectApprovals";
+import AdminPayments from "./pages/admin/AdminPayments";
+import AdminDisputes from "./pages/admin/AdminDisputes";
+import AdminReviews from "./pages/admin/AdminReviews";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 import ContractorDashboard from "./pages/contractor/ContractorDashboard";
 import ContractorProjects from "./pages/contractor/ContractorProjects";
