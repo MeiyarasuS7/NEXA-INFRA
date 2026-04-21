@@ -118,7 +118,6 @@ const contractorSchema = new Schema<IContractor>(
     toObject: { virtuals: true },
   }
 );
-
 // Indexes
 contractorSchema.index({ userId: 1 });
 contractorSchema.index({ specialties: 1 });
